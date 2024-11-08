@@ -12,3 +12,4 @@ data/epidemiological/branda/*
 .Ruserdata
 
 *.DS_Store
+*.old
