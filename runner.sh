@@ -2,15 +2,15 @@ times=(
 1
 )
 week=(
-52 5 10
+5
 )
 
-maxiter=(15)
-runs=(4)
+maxiter=(50)
+runs=(200)
 
 # do not use spaces in the description
-desc="test_codice_input_data_scorporato"
+desc="test_multiple_machines"
 
 LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 
-parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast Rscript source/main.R ::: ${times[@]} ::: ${week[@]} ::: "$desc" ::: ${maxiter[@]} ::: ${runs[@]}
+parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: ${times[@]} ::: ${week[@]} ::: "$desc" ::: ${maxiter[@]} ::: ${runs[@]}
