@@ -1,0 +1,14 @@
+joblog/*
+sim_results/*
+data/census/*
+data/data_generators/check_files/*
+data/data_generators/raw_data_sources/*
+data/epidemiological/branda/*
+
+
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+*.DS_Store
