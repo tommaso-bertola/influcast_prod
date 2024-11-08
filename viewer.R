@@ -1,0 +1,5 @@
+library(shiny)
+source("viewer/pso_visualizer.R")
+source("viewer/ui.R")
+source("viewer/server.R")
+runApp(shinyApp(ui = ui_interface, server = server_fnc), port = 8080)
