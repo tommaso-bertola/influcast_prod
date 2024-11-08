@@ -17,6 +17,8 @@ if (length(args) != 0) {
     comment_ <- args[3] # comment to add to the results
     maxit_ <- as.numeric(args[4]) # maximum number of iterations
     runs_ <- as.numeric(args[5]) # number of runs
+    swarmsize_ <- as.numeric(args[6]) # change swarm size
+    epidemic_model_ <- args[7]
 } else {
     warning("Specify parameters to the script: counter and weeks")
     quit()
@@ -60,7 +62,7 @@ model_builder <- function(epidemic_model, fitness_evaluation_method) {
 
 parallel_PSO <- function(
     desc = comment_,
-    epidemic_model = "SIR_multistrain_3",
+    epidemic_model = epidemic_model_, # "SIR_multistrain_3",
     fitness_method = "sum_multi_2",
     season_data = "2023-2024",
     n_week = weeks_,
@@ -69,7 +71,7 @@ parallel_PSO <- function(
     runs = runs_,
     maxit = maxit_,
     abstol = 0.1,
-    swarmsize = 150,
+    swarmsize = swarmsize_,
     inertia = 0.5,
     c.p = 0.4,
     c.g = 0.6) {

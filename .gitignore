@@ -5,8 +5,6 @@ data/data_generators/check_files/*
 data/data_generators/raw_data_sources/*
 data/epidemiological/branda/*
 output/*
-output/*
-
 
 .Rproj.user
 .Rhistory
