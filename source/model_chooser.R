@@ -10,7 +10,7 @@ model_chooser <- function(epidemic_model) {
     )
 
     if (!epidemic_model %in% names(models)) {
-        stop("Epidemic model not recognized")
+        stop("Epidemic model not recognized:", epidemic_model)
     }
 
     # loads the correct model locally

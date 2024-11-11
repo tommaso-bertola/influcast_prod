@@ -97,7 +97,7 @@ parallel_PSO <- function(
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params
     data_inc <- real_data$abs_incidence_reg_age
-    unique_run_string <- paste(gnu_parallel_string, "_", substr(digest(date(), algo = "md5"), 1, 5))
+    unique_run_string <- paste0(gnu_parallel_string, "_", substr(digest(date(), algo = "md5"), 1, 5))
 
     # create progress bar
     # p <- progressor(steps = runs)
