@@ -19,6 +19,7 @@ if (length(args) != 0) {
     runs_ <- as.numeric(args[5]) # number of runs
     swarmsize_ <- as.numeric(args[6]) # change swarm size
     epidemic_model_ <- args[7]
+    unique_string_ <- args[8]
 } else {
     warning("Specify parameters to the script: counter and weeks")
     quit()
@@ -62,6 +63,7 @@ model_builder <- function(epidemic_model, fitness_evaluation_method) {
 
 parallel_PSO <- function(
     desc = comment_,
+    gnu_parallel_string = unique_string_,
     epidemic_model = epidemic_model_, # "SIR_multistrain_3",
     fitness_method = "sum_multi_2",
     season_data = "2023-2024",
@@ -95,7 +97,7 @@ parallel_PSO <- function(
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params
     data_inc <- real_data$abs_incidence_reg_age
-    unique_run_string <- substr(digest(date(), algo = "md5"), 1, 5)
+    unique_run_string <- paste(gnu_parallel_string, "_", substr(digest(date(), algo = "md5"), 1, 5))
 
     # create progress bar
     # p <- progressor(steps = runs)

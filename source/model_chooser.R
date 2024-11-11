@@ -4,7 +4,9 @@ model_chooser <- function(epidemic_model) {
         "SEIR" = "epidemic_models/SEIR.R",
         "SIIR" = "epidemic_models/SIIR.R",
         "SIR_multistrain_2" = "epidemic_models/SIR_multistrain_2.R",
-        "SIR_multistrain_3" = "epidemic_models/SIR_multistrain_3.R"
+        "SIR_multistrain_3" = "epidemic_models/SIR_multistrain_3.R",
+        "SIR_multistrain_4" = "epidemic_models/SIR_multistrain_4.R",
+        "SIR_multistrain_5" = "epidemic_models/SIR_multistrain_5.R"
     )
 
     if (!epidemic_model %in% names(models)) {
