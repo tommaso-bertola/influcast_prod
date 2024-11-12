@@ -12,18 +12,19 @@ library(digest)
 # allow arguments
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 0) {
-    counter_ <- as.numeric(args[1]) # dummy index to compute more iterations
-    weeks_ <- as.numeric(args[2]) # index to check how many weeks to include
-    comment_ <- args[3] # comment to add to the results
-    maxit_ <- as.numeric(args[4]) # maximum number of iterations
-    runs_ <- as.numeric(args[5]) # number of runs
-    swarmsize_ <- as.numeric(args[6]) # change swarm size
-    epidemic_model_ <- args[7]
-    unique_string_ <- args[8]
-    fitness_method_ <- args[9]
-    age_groups_ <- as.numeric(args[10])
+    unique_string_ <- args[1]
+    comment_ <- args[2] # comment to add to the results
+    epi_fit_age_ <- args[3]
+    epidemic_model_ <- strsplit(epi_fit_age_, "-")[[1]][1]
+    fitness_method_ <- strsplit(epi_fit_age_, "-")[[1]][2]
+    age_groups_ <- as.numeric(strsplit(epi_fit_age_, "-")[[1]][3])
+    counter_ <- as.numeric(args[4]) # dummy index to compute more iterations
+    weeks_ <- as.numeric(args[5]) # index to check how many weeks to include
+    maxit_ <- as.numeric(args[6]) # maximum number of iterations
+    runs_ <- as.numeric(args[7]) # number of runs
+    swarmsize_ <- as.numeric(args[8]) # change swarm size
 } else {
-    warning("Specify parameters to the script: counter and weeks")
+    stop("Specify parameters to the script\n")
     quit()
 }
 
@@ -66,7 +67,7 @@ model_builder <- function(epidemic_model, fitness_evaluation_method) {
 parallel_PSO <- function(
     desc = comment_,
     gnu_parallel_string = unique_string_,
-    epidemic_model = epidemic_model_, # "SIR_multistrain_3",
+    epidemic_model = epidemic_model_,
     fitness_method = fitness_method_,
     season_data = "2023-2024",
     n_week = weeks_,
