@@ -13,7 +13,8 @@ SIR_simple_ <- function(times, yini, params) {
         x_i <- yini[(mm_aa + 1):(2 * mm_aa)]
         x_ii <- yini[(2 * mm_aa + 1):(3 * mm_aa)]
         r_i <- yini[(3 * mm_aa + 1):(4 * mm_aa)]
-        n_i <- s_i + x_i + x_ii + r_i
+        r_ii <- yini[(4 * mm_aa + 1):(5 * mm_aa)]
+        n_i <- s_i + x_i + x_ii + r_i + r_ii
 
         ds <- -(lambda_1 %*% (x_i / n_i) * s_i) - (lambda_2 %*% (x_ii / n_i) * s_i)
         dx <- +(lambda_1 %*% (x_i / n_i) * s_i) - mu_1 * x_i
@@ -34,8 +35,10 @@ generate_ts_ <- function(params) {
         pop_inf_i <- pop_patch * prop_inf_i
         pop_sus <- (pop_patch - pop_inf - pop_inf_i) * (1 - prop_rec)
         pop_rec <- (pop_patch - pop_inf - pop_inf_i) * prop_rec
+        pop_rec_i <- pop_rec * prop_rec_12
+        pop_rec_ii <- pop_rec * (1 - prop_rec_12)
 
-        yini <- c(pop_sus, pop_inf, pop_inf_i, pop_rec * prop_rec_12, pop_rec * prop_rec_12)
+        yini <- c(pop_sus, pop_inf, pop_inf_i, pop_rec_i, pop_rec_ii)
         solution_out <- rk(y = yini, times = times, func = SIR_simple, parms = params, method = "rk2")
 
         return(solution_out)
@@ -133,9 +136,9 @@ local_x2params_ <- function(params, x) {
     params$mu_1 <- as.vector(1 / x[2:5] %x% rep(1, 21))
     params$mu_2 <- as.vector(1 / x[6:9] %x% rep(1, 21))
     params$p_reported <- exp(x[10])
-    params$prop_inf <-  exp(x[11:31])
+    params$prop_inf <- exp(x[11:31])
     params$prop_inf_i <- exp(x[32:52])
-    params$prop_rec <-  exp(x[53:73])
+    params$prop_rec <- exp(x[53:73])
     tmp <- lambda_gen_2(params$phi, exp(x[74:105]), params)
     params$prop_rec_12 <- exp(x[106])
     params$lambda_1 <- tmp$lambda_1

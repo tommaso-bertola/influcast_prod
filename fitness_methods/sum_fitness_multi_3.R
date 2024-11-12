@@ -9,7 +9,7 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
 
     residuals_df <- abs(weekly_inc - data_inc) / (data_inc + 0.01) # to ensure no division by 0 has to be performed
     res <- 0
-    merit_factor <- c(rep(1, 21)) # arbitrarily defined weights for each age group
+    merit_factor <- c(rep(10, 21)) # arbitrarily defined weights for each age group
     if (ncol(residuals_df) != length(merit_factor)) {
         stop("The number of age groups in the residuals_df does not match the number of merit factors")
         quit()

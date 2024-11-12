@@ -13,7 +13,8 @@ SIR_simple_ <- function(times, yini, params) {
         x_i <- yini[(mm_aa + 1):(2 * mm_aa)]
         x_ii <- yini[(2 * mm_aa + 1):(3 * mm_aa)]
         r_i <- yini[(3 * mm_aa + 1):(4 * mm_aa)]
-        n_i <- s_i + x_i + x_ii + r_i
+        r_ii <- yini[(4 * mm_aa + 1):(5 * mm_aa)]
+        n_i <- s_i + x_i + x_ii + r_i + r_ii
 
         ds <- -(lambda_1 %*% (x_i / n_i) * s_i) - (lambda_2 %*% (x_ii / n_i) * s_i)
         dx <- +(lambda_1 %*% (x_i / n_i) * s_i) - mu_1 * x_i
@@ -34,8 +35,10 @@ generate_ts_ <- function(params) {
         pop_inf_i <- pop_patch * prop_inf_i
         pop_sus <- (pop_patch - pop_inf - pop_inf_i) * (1 - prop_rec)
         pop_rec <- (pop_patch - pop_inf - pop_inf_i) * prop_rec
+        pop_rec_i <- pop_rec * prop_rec_12
+        pop_rec_ii <- pop_rec * (1 - prop_rec_12)
 
-        yini <- c(pop_sus, pop_inf, pop_inf_i, pop_rec * prop_rec_12, pop_rec * prop_rec_12)
+        yini <- c(pop_sus, pop_inf, pop_inf_i, pop_rec_i, pop_rec_ii)
         solution_out <- rk(y = yini, times = times, func = SIR_simple, parms = params, method = "rk2")
 
         return(solution_out)
@@ -83,7 +86,10 @@ ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported) {
         summarize(across(everything(), sum)) %>%
         select(-starts_with("week")) %>%
         mutate_all(~ round(. * p_reported, 0))
-
+    # cat("-------------------\n")
+    # print(inc)
+    # stop("Stopping here")
+    # quit()
     return(list(
         inc = inc,
         percent_strains = percent_strains
