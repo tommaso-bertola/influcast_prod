@@ -4,12 +4,19 @@ library(stringr)
 library(readr)
 library(reshape2)
 
-census <- function() {
+census <- function(age_groups = NULL) {
     # Handle the census data
     file_istat <- "data/census/DCIS_POPRES1_21032024103707419.csv"
     dcis <- utils::read.csv(file_istat, header = TRUE)
-    age_group_names <- c("age_0_4", "age_5_14", "age_15_64", "age_65_end")
-    starts <- c(0, 5, 15, 65)
+    if (age_groups == 4) {
+        age_group_names <- c("age_0_4", "age_5_14", "age_15_64", "age_65_end")
+        starts <- c(0, 5, 15, 65)
+    } else if (age_groups == 1) {
+        age_group_names <- c("age_0_end")
+        starts <- c(0)
+    } else {
+        stop("Age groups not recognized", age_groups, "\nCaused by: census")
+    }
 
     # get the appropriate class depending on the age
     age_groupper_ <- function(x) {
@@ -59,13 +66,19 @@ census <- function() {
         mutate(across(starts_with("age"), ~ . / total_italian_pop, .names = "{col}_norm")) %>%
         select(region_name, all_of(ends_with("_norm")))
 
-    # Fraction of citizens per region and age group
-    initial_fraction <- c(
-        italian_pop_distrib$age_0_4_norm,
-        italian_pop_distrib$age_5_14_norm,
-        italian_pop_distrib$age_15_64_norm,
-        italian_pop_distrib$age_65_end_norm
-    )
+
+    # # Fraction of citizens per region and age group
+    # initial_fraction <- c(
+    #     italian_pop_distrib$age_0_4_norm,
+    #     italian_pop_distrib$age_5_14_norm,
+    #     italian_pop_distrib$age_15_64_norm,
+    #     italian_pop_distrib$age_65_end_norm
+    # )
+
+    # Concatenate the specified columns
+    columns_to_concatenate <- paste0(age_group_names, "_norm")
+    initial_fraction <- as.vector(unlist(italian_pop_distrib[columns_to_concatenate]))
+
 
     # Region order census
     region_order_census <- dcis %>%
@@ -85,13 +98,15 @@ census <- function() {
     population_reg_age <- dcis %>%
         mutate(region_name = str_replace_all(tolower(region_name), " ", "-")) %>%
         select(-nuts2)
-        
-    population_reg_age <- data.frame(pop_reg_age = c(
-        population_reg_age$age_0_4,
-        population_reg_age$age_5_14,
-        population_reg_age$age_15_64,
-        population_reg_age$age_65_end
-    ))
+
+    # population_reg_age <- data.frame(pop_reg_age = c(
+    #     population_reg_age$age_0_4,
+    #     population_reg_age$age_5_14,
+    #     population_reg_age$age_15_64,
+    #     population_reg_age$age_65_end
+    # ))
+
+    population_reg_age <- data.frame(pop_reg_age = as.vector(unlist(population_reg_age[age_group_names])))
 
     # computes people per region
     population_reg <- data.frame(pop_reg = dcis$pop_reg)

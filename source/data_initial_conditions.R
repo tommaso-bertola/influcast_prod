@@ -9,8 +9,8 @@ source("source/data_census.R")
 source("source/data_incidence.R")
 source("source/data_mobility.R")
 
-initial_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "radiation") {
-    census_df <- census()
+initial_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "radiation", age_groups=NULL) {
+    census_df <- census(age_groups)
     incidence_df <- incidence(season, n_week, census_df$age_group_names, census_df$dcis)
     c_matrix_data <- as.matrix(readRDS("data/census/grouped_contact_matrix.rds"))
     mobility_matr <- mobility(mobility_type = mobility_type)

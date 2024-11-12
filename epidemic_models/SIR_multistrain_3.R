@@ -13,7 +13,8 @@ SIR_simple_ <- function(times, yini, params) {
         x_i <- yini[(mm_aa + 1):(2 * mm_aa)]
         x_ii <- yini[(2 * mm_aa + 1):(3 * mm_aa)]
         r_i <- yini[(3 * mm_aa + 1):(4 * mm_aa)]
-        n_i <- s_i + x_i + x_ii + r_i
+        r_ii <- yini[(4 * mm_aa + 1):(5 * mm_aa)]
+        n_i <- s_i + x_i + x_ii + r_i + r_ii
 
         ds <- -(lambda_1 %*% (x_i / n_i) * s_i) - (lambda_2 %*% (x_ii / n_i) * s_i)
         dx <- +(lambda_1 %*% (x_i / n_i) * s_i) - mu_1 * x_i
@@ -34,8 +35,10 @@ generate_ts_ <- function(params) {
         pop_inf_i <- pop_patch * prop_inf_i
         pop_sus <- (pop_patch - pop_inf - pop_inf_i) * (1 - prop_rec)
         pop_rec <- (pop_patch - pop_inf - pop_inf_i) * prop_rec
+        pop_rec_i <- pop_rec * prop_rec_12
+        pop_rec_ii <- pop_rec * (1 - prop_rec_12)
 
-        yini <- c(pop_sus, pop_inf, pop_inf_i, pop_rec * prop_rec_12, pop_rec * prop_rec_12)
+        yini <- c(pop_sus, pop_inf, pop_inf_i, pop_rec_i, pop_rec_ii)
         solution_out <- rk(y = yini, times = times, func = SIR_simple, parms = params, method = "rk2")
 
         return(solution_out)
@@ -122,8 +125,8 @@ bounds_factory <- function() {
     bounds <- register_bound(bounds, "log_p_inf_patch_1", log(0.00001), log(0.99), 21)
     bounds <- register_bound(bounds, "log_p_rec_age", log(0.000001), log(0.9), 4)
     bounds <- register_bound(bounds, "log_p_rec_patch", log(0.00001), log(0.9), 21)
-    bounds <- register_bound(bounds, "q_1", log(0.00001), log(2), 16)
-    bounds <- register_bound(bounds, "q_2", log(0.00001), log(2), 16)
+    bounds <- register_bound(bounds, "q_1", log(0.00001), log(10), 16)
+    bounds <- register_bound(bounds, "q_2", log(0.00001), log(10), 16)
     bounds <- register_bound(bounds, "log_prop_rec_12", log(0.00001), log(0.9))
     return(bounds)
 }
@@ -136,8 +139,8 @@ local_x2params_ <- function(params, x) {
     params$prop_inf <- exp(x[11:14]) %x% exp(x[15:35])
     params$prop_inf_i <- exp(x[36:39]) %x% exp(x[40:60])
     params$prop_rec <- exp(x[61:64]) %x% exp(x[65:85])
-    tmp <- lambda_gen_2(params$phi, exp(x[85:116]), params)
-    params$prop_rec_12 <- exp(x[117])
+    tmp <- lambda_gen_2(params$phi, exp(x[86:117]), params)
+    params$prop_rec_12 <- exp(x[118])
     params$lambda_1 <- tmp$lambda_1
     params$lambda_2 <- tmp$lambda_2
     return(params)

@@ -86,7 +86,10 @@ ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported) {
         summarize(across(everything(), sum)) %>%
         select(-starts_with("week")) %>%
         mutate_all(~ round(. * p_reported, 0))
-
+    # cat("-------------------\n")
+    # print(inc)
+    # stop("Stopping here")
+    # quit()
     return(list(
         inc = inc,
         percent_strains = percent_strains
@@ -116,31 +119,31 @@ bounds_factory <- function() {
 
     bounds <- list()
     bounds <- register_bound(bounds, "log_phi", log(0.00001), log(1))
-    bounds <- register_bound(bounds, "mu_inv_1", 0.1, 70, 4)
-    bounds <- register_bound(bounds, "mu_inv_2", 0.1, 70, 4)
+    bounds <- register_bound(bounds, "mu_inv_1", 0.05, 70)
+    bounds <- register_bound(bounds, "mu_inv_2", 0.05, 70)
     bounds <- register_bound(bounds, "log_p_rep", log(0.05), log(0.8))
-    bounds <- register_bound(bounds, "log_p_inf_age", log(0.0001), log(0.99), 4)
-    # bounds <- register_bound(bounds, "log_p_inf_patch", log(0.00001), log(0.99), 21)
-    bounds <- register_bound(bounds, "log_p_inf_age_1", log(0.0001), log(0.99), 4)
-    # bounds <- register_bound(bounds, "log_p_inf_patch_1", log(0.00001), log(0.99), 21)
-    bounds <- register_bound(bounds, "log_p_rec_age", log(0.00001), log(0.9), 4)
-    # bounds <- register_bound(bounds, "log_p_rec_patch", log(0.00001), log(0.9), 21)
-    bounds <- register_bound(bounds, "q_1", log(0.00001), log(2), 16)
-    bounds <- register_bound(bounds, "q_2", log(0.00001), log(2), 16)
+    # bounds <- register_bound(bounds, "log_p_inf_age", log(0.00001), log(0.99), 4)
+    bounds <- register_bound(bounds, "log_p_inf_patch", log(0.0001), log(0.99), 21)
+    # bounds <- register_bound(bounds, "log_p_inf_age_1", log(0.00001), log(0.99), 4)
+    bounds <- register_bound(bounds, "log_p_inf_patch_1", log(0.0001), log(0.99), 21)
+    # bounds <- register_bound(bounds, "log_p_rec_age", log(0.000001), log(0.9), 4)
+    bounds <- register_bound(bounds, "log_p_rec_patch", log(0.0001), log(0.9), 21)
+    bounds <- register_bound(bounds, "q_1", log(0.00001), log(20), 1)
+    bounds <- register_bound(bounds, "q_2", log(0.00001), log(20), 1)
     bounds <- register_bound(bounds, "log_prop_rec_12", log(0.00001), log(0.9))
     return(bounds)
 }
 
 local_x2params_ <- function(params, x) {
     params$phi <- exp(x[1])
-    params$mu_1 <- as.vector(1 / x[2:5] %x% rep(1, 21))
-    params$mu_2 <- as.vector(1 / x[6:9] %x% rep(1, 21))
-    params$p_reported <- exp(x[10])
-    params$prop_inf <- exp(x[11:14])
-    params$prop_inf_i <- exp(x[15:18])
-    params$prop_rec <- exp(x[19:22])
-    tmp <- lambda_gen_2(params$phi, exp(x[23:54]), params)
-    params$prop_rec_12 <- exp(x[55])
+    params$mu_1 <- as.vector(1 / x[2] %x% rep(1, 21))
+    params$mu_2 <- as.vector(1 / x[3] %x% rep(1, 21))
+    params$p_reported <- exp(x[4])
+    params$prop_inf <- exp(x[5:25])
+    params$prop_inf_i <- exp(x[26:46])
+    params$prop_rec <- exp(x[47:67])
+    tmp <- lambda_gen_2(params$phi, exp(x[68:69]), params)
+    params$prop_rec_12 <- exp(x[70])
     params$lambda_1 <- tmp$lambda_1
     params$lambda_2 <- tmp$lambda_2
     return(params)

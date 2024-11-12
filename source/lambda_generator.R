@@ -108,8 +108,14 @@ lambda_gen_2 <- function(p, x, params) {
         mobility_normalized[i, ] <- tmp
     }
 
-    beta_1 <- matrix(x[1:16], ncol = 4, byrow = TRUE)
-    beta_2 <- matrix(x[17:32], ncol = 4, byrow = TRUE)
+    n_elements <- length(x)
+    if (n_elements %% 2 != 0) {
+        stop("Number of elements in x must be even, but is ", n_elements, "\nCaused by: lambda_gen_2")
+    }
+    n_elements_half <- n_elements / 2
+    n_age_groups <- sqrt(n_elements / 2)
+    beta_1 <- matrix(x[1:n_elements_half], ncol = n_age_groups, byrow = TRUE)
+    beta_2 <- matrix(x[(n_elements_half + 1):n_elements], ncol = n_age_groups, byrow = TRUE)
 
     lambda_1 <- beta_1 %x% mobility_normalized
     lambda_2 <- beta_2 %x% mobility_normalized

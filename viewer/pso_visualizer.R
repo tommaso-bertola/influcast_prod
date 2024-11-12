@@ -259,8 +259,8 @@ summary_values_fn <- function(converged_parameters_melted) {
         group_by(variable) %>%
         summarize(
             mean_val = round(mean(value), 3),
-            low = round(quantile(value, 0.05, na.rm=T), 3),
-            upp = round(quantile(value, 0.95, na.rm=T), 3)
+            low = round(quantile(value, 0.05, na.rm = T), 3),
+            upp = round(quantile(value, 0.95, na.rm = T), 3)
         )
     colnames(summary_values) <- c("Name", "Mean", "LowCL", "HighCL")
     summary_values
@@ -314,8 +314,8 @@ df_long_fn <- function(converged_parameters, pso_data, population_reg, populatio
         df <- dataframe %>% summarize(
             mean = mean(values, na.rm = TRUE),
             devstd = sd(values, na.rm = TRUE),
-            quant_up = quantile(values, 0.9, names = FALSE, na.rm=T),
-            quant_do = quantile(values, 0.1, names = FALSE, na.rm=T),
+            quant_up = quantile(values, 0.9, names = FALSE, na.rm = T),
+            quant_do = quantile(values, 0.1, names = FALSE, na.rm = T),
             .groups = "drop"
         )
         return(df)
@@ -324,11 +324,11 @@ df_long_fn <- function(converged_parameters, pso_data, population_reg, populatio
     influcast_summariser <- function(dataframe) {
         quantiles <- c(0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.975, 0.99)
         name_q <- paste0("q", quantiles[1] * 100)
-        output <- dataframe %>% summarise({{ name_q }} := quantile(values, quantiles[1], na.rm=T), .groups = "drop")
+        output <- dataframe %>% summarise({{ name_q }} := quantile(values, quantiles[1], na.rm = T), .groups = "drop")
 
         for (i in c(2:(length(quantiles)))) {
             name_q <- paste0("q", quantiles[i] * 100)
-            tmp <- dataframe %>% summarise({{ name_q }} := quantile(values, quantiles[i], na.rm=T), .groups = "drop")
+            tmp <- dataframe %>% summarise({{ name_q }} := quantile(values, quantiles[i], na.rm = T), .groups = "drop")
             output <- cbind(output, tmp[, ncol(tmp)])
         }
         return(output)
@@ -351,7 +351,7 @@ df_long_fn <- function(converged_parameters, pso_data, population_reg, populatio
         } else {
             inc <- inc_tot
         }
-        if(any(is.na(inc))) {
+        if (any(is.na(inc))) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
             next
         }
@@ -417,7 +417,7 @@ df_long_fn <- function(converged_parameters, pso_data, population_reg, populatio
         left_join(population_reg, by = c("n_patch" = "n_patch")) %>%
         mutate(
             across(starts_with("q"), ~ . / pop_reg * 1000)
-    )
+        )
 
     inc_national <- df_long_nation %>%
         mutate(

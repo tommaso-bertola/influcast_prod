@@ -20,6 +20,8 @@ if (length(args) != 0) {
     swarmsize_ <- as.numeric(args[6]) # change swarm size
     epidemic_model_ <- args[7]
     unique_string_ <- args[8]
+    fitness_method_ <- args[9]
+    age_groups_ <- as.numeric(args[10])
 } else {
     warning("Specify parameters to the script: counter and weeks")
     quit()
@@ -65,7 +67,7 @@ parallel_PSO <- function(
     desc = comment_,
     gnu_parallel_string = unique_string_,
     epidemic_model = epidemic_model_, # "SIR_multistrain_3",
-    fitness_method = "sum_multi_2",
+    fitness_method = fitness_method_,
     season_data = "2023-2024",
     n_week = weeks_,
     mobility_type = "radiation",
@@ -76,7 +78,8 @@ parallel_PSO <- function(
     swarmsize = swarmsize_,
     inertia = 0.5,
     c.p = 0.4,
-    c.g = 0.6) {
+    c.g = 0.6,
+    age_groups = age_groups_) {
     # create the fitness function depending on the epidemic model
     model <- model_builder(epidemic_model, fitness_method)
     fitness_compiled <- cmpfun(model$fitness)
@@ -93,7 +96,7 @@ parallel_PSO <- function(
     }
 
     # get real data
-    real_data_and_pars <- get_real_data(season_data, n_week, mobility_type)
+    real_data_and_pars <- get_real_data(season_data, n_week, mobility_type, age_groups)
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params
     data_inc <- real_data$abs_incidence_reg_age
