@@ -4,7 +4,7 @@ library(stringr)
 library(readr)
 library(reshape2)
 
-census <- function(age_groups = 4) {
+census <- function(age_groups = NULL) {
     # Handle the census data
     file_istat <- "data/census/DCIS_POPRES1_21032024103707419.csv"
     dcis <- utils::read.csv(file_istat, header = TRUE)
