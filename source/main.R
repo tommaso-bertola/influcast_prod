@@ -100,14 +100,12 @@ parallel_PSO <- function(
     real_data_and_pars <- get_real_data(season_data, n_week, mobility_type, age_groups)
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params
-    data_inc <- real_data$abs_incidence_reg_age
+    data_inc <- real_data_and_pars$tables$incidences
     unique_run_string <- paste0(gnu_parallel_string, "_", substr(digest(date(), algo = "md5"), 1, 5))
 
     # create progress bar
-    # p <- progressor(steps = runs)
     time <- system.time({
         results <- foreach(x = icount(runs), .combine = rbind, .options.future = list(chunk.size = 1)) %dofuture% {
-            # p(sprintf("x=%g", x))
             time_inner_loop <- system.time({
                 x <- psoptim(rep(NA, n_pars),
                     fn = fitness_compiled,
@@ -194,10 +192,12 @@ parallel_PSO <- function(
         timing = results[, 3],
         complete_list_parameters = params,
         original_data = list(
-            abs_inc_reg_age = real_data$abs_incidence_reg_age,
-            abs_inc_reg = real_data$abs_incidence_reg,
-            inc_reg_age = real_data$incidence_reg_age,
-            inc_reg = real_data$incidence_reg,
+            abs_inc_reg_age = real_data$incidences$absolute$abs_incidence_reg_age,
+            abs_inc_reg = real_data$incidences$absolute$abs_incidence_reg,
+            abs_inc_nat = real_data$incidences$absolute$abs_incidence_nat,
+            inc_reg_age = real_data$incidences$per_thousand$incidence_reg_age,
+            inc_reg = real_data$incidences$per_thousand$incidence_reg,
+            inc_nat = real_data$incidences$per_thousand$incidence_nat,
             pop_reg_age = real_data$population_reg_age,
             pop_reg = real_data$population_reg
         )

@@ -6,6 +6,7 @@ get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "
     n <- as.data.frame(data$abs_incidence_reg)
     n_2 <- as.data.frame(data$incidence_reg)
     incid_nat <- as.data.frame(data$incidence_nat)
+    abs_incid_nat <- as.data.frame(data$abs_incidence_nat)
     virus_percentage <- as.data.frame(data$virus_percentage)
     colnames(m) <- seq_len(ncol(m))
     colnames(m_2) <- seq_len(ncol(m))
@@ -14,11 +15,18 @@ get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "
     colnames(incid_nat) <- seq_len(ncol(incid_nat))
     return(list(
         tables = list(
-            abs_incidence_reg_age = m,
-            abs_incidence_reg = n,
-            incidence_reg_age = m_2,
-            incidence_reg = n_2,
-            incidence_nat = incid_nat,
+            incidences = list(
+                absolute = list(
+                    abs_incidence_reg_age = m,
+                    abs_incidence_reg = n,
+                    abs_incidence_nat = abs_incid_nat
+                ),
+                per_thousand = list(
+                    incidence_reg_age = m_2,
+                    incidence_reg = n_2,
+                    incidence_nat = incid_nat
+                )
+            ),
             population_reg_age = data$population_reg_age,
             population_reg = data$population_reg,
             virus_percentage = virus_percentage
@@ -32,6 +40,7 @@ get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "
             n_mm_aa = data$n_mm * data$n_aa,
             pop_tot = data$italian_population,
             prop_pop = data$initial_fraction,
+            population_reg_age = as.vector(data$population_reg_age),
             region_names = data$region_names,
             region_names_nuts2 = data$region_names_nuts2,
             age_group_names = data$age_group_names,

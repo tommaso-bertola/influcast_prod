@@ -9,11 +9,12 @@ fitness_methods_chooser <- function(fitness_evaluation_method) {
         "peak" = "fitness_methods/peak_fitness.R",
         "peak_squared" = "fitness_methods/peak_squared_fitness.R",
         "peak_squared_no_thr" = "fitness_methods/peak_squared_no_thr_fitness.R",
-        "peak_squared_no_thr_4" = "fitness_methods/peak_squared_no_thr_fitness_4.R"
+        "peak_squared_no_thr_4" = "fitness_methods/peak_squared_no_thr_fitness_4.R",
+        "national_fitness" = "fitness_methods/sum_fitness_multi_3_national.R"
     )
 
     if (!fitness_evaluation_method %in% names(fitness_files)) {
-        stop("Fitness evaluation method not recognized:", fitness_evaluation_method)
+        stop("Fitness evaluation method not recognized: ", fitness_evaluation_method)
     }
 
     source(fitness_files[[fitness_evaluation_method]], local = TRUE)

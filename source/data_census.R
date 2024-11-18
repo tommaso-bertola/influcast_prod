@@ -15,7 +15,7 @@ census <- function(age_groups = NULL) {
         age_group_names <- c("age_0_end")
         starts <- c(0)
     } else {
-        stop("Age groups not recognized", age_groups, "\nCaused by: census")
+        stop("Age groups not recognized ", age_groups, "\nCaused by: census")
     }
 
     # get the appropriate class depending on the age
@@ -66,15 +66,6 @@ census <- function(age_groups = NULL) {
         mutate(across(starts_with("age"), ~ . / total_italian_pop, .names = "{col}_norm")) %>%
         select(region_name, all_of(ends_with("_norm")))
 
-
-    # # Fraction of citizens per region and age group
-    # initial_fraction <- c(
-    #     italian_pop_distrib$age_0_4_norm,
-    #     italian_pop_distrib$age_5_14_norm,
-    #     italian_pop_distrib$age_15_64_norm,
-    #     italian_pop_distrib$age_65_end_norm
-    # )
-
     # Concatenate the specified columns
     columns_to_concatenate <- paste0(age_group_names, "_norm")
     initial_fraction <- as.vector(unlist(italian_pop_distrib[columns_to_concatenate]))
@@ -98,13 +89,6 @@ census <- function(age_groups = NULL) {
     population_reg_age <- dcis %>%
         mutate(region_name = str_replace_all(tolower(region_name), " ", "-")) %>%
         select(-nuts2)
-
-    # population_reg_age <- data.frame(pop_reg_age = c(
-    #     population_reg_age$age_0_4,
-    #     population_reg_age$age_5_14,
-    #     population_reg_age$age_15_64,
-    #     population_reg_age$age_65_end
-    # ))
 
     population_reg_age <- data.frame(pop_reg_age = as.vector(unlist(population_reg_age[age_group_names])))
 

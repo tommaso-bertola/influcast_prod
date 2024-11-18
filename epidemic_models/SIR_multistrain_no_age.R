@@ -57,7 +57,7 @@ get_singular_ts_ <- function(solution_out, n_mm, n_aa) {
     return(list(s = s, xi = xi, xii = xii, r_1 = r_1, r_2 = r_2))
 }
 
-ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported) {
+ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, pop_reg_age) {
     singular_ts <- get_singular_ts(solution_out, n_mm, n_aa)
     new_inf_i <- singular_ts$xi
     new_inf_ii <- singular_ts$xii
@@ -79,19 +79,28 @@ ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported) {
     s <- singular_ts$s
 
     # -(S(t+1) - S(t))
-    inc <- -apply(as.data.frame(s), 2, diff) %>%
+    abs_inc <- -apply(as.data.frame(s), 2, diff) %>%
         as.data.frame() %>%
         mutate(week = (row(.) - 1) %/% 7 + 1) %>%
         group_by(week) %>%
         summarize(across(everything(), sum)) %>%
         select(-starts_with("week")) %>%
-        mutate_all(~ round(. * p_reported, 0))
-    # cat("-------------------\n")
-    # print(inc)
-    # stop("Stopping here")
-    # quit()
+        mutate_all(~ round(. * p_reported, 0)) %>%
+        as.data.frame()
+
+    abs_national_inc <- rowSums(abs_inc)
+    if (nrow(abs_inc) != length(abs_national_inc)) {
+        stop("Error in ts_to_inc: inc and national_inc have different number of rows")
+        quit()
+    }
+    national_inc <- abs_national_inc / pop_national * 1000
+    inc <- sweep(abs_inc, 2, unlist(pop_reg_age), FUN = "/") * 1000
+
     return(list(
+        abs_inc = abs_inc,
+        abs_national_inc = abs_national_inc,
         inc = inc,
+        national_inc = national_inc,
         percent_strains = percent_strains
     ))
 }
@@ -102,7 +111,7 @@ ts_to_inc <- cmpfun(ts_to_inc_)
 
 SIR_model_ <- function(params) {
     solution_out <- generate_ts(params)
-    weekly_inc <- ts_to_inc(solution_out, params$n_mm, params$n_aa, params$p_reported)
+    weekly_inc <- ts_to_inc(solution_out, params$n_mm, params$n_aa, params$p_reported, params$pop_top, params$population_reg_age)
     return(weekly_inc)
 }
 

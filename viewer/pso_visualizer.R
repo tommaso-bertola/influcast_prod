@@ -347,7 +347,7 @@ df_long_fn <- function(converged_parameters, pso_data, population_reg, populatio
         params <- params_transform(params, converged_parameters, i)
         inc_tot <- epidemic_model_incidence(params)
         if (typeof(inc_tot) == "list") {
-            inc <- inc_tot$inc
+            inc <- inc_tot$abs_inc
         } else {
             inc <- inc_tot
         }

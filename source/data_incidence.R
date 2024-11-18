@@ -103,8 +103,11 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
             ) %>%
             pivot_wider(values_from = value, names_from = c("nuts2", "variable")) %>%
             select(-year_week)
-    } else {
+    } else if (length(age_group_names) == 1) {
         abs_inc_reg_age <- abs_inc_reg
+    } else {
+        stop("age_group_names must be of length 1 or 4")
+        quit()
     }
 
     # some data to output
@@ -135,15 +138,22 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
         inc_reg_age <- inc_reg
     }
 
-    inc_nat <- incidence_all_census_all %>%
+    inc_nat_tmp <- incidence_all_census_all %>%
         select(year_week, number_cases, population) %>%
         group_by(year_week) %>%
-        summarise(tot_cases = sum(number_cases, na.rm = TRUE), tot_pop = sum(population, na.rm = TRUE)) %>%
+        summarise(tot_cases = sum(number_cases, na.rm = TRUE), tot_pop = sum(population, na.rm = TRUE))
+
+    inc_nat <- inc_nat_tmp %>%
         mutate(incidence_nat = tot_cases / tot_pop * 1000) %>%
         select(incidence_nat)
 
+    abs_inc_nat <- inc_nat_tmp %>%
+        mutate(abs_incidence_nat = tot_cases) %>%
+        select(abs_incidence_nat)
+
     return(list(
         inc_nat = inc_nat,
+        abs_inc_nat = abs_inc_nat,
         inc_reg = inc_reg,
         inc_reg_age = inc_reg_age,
         n_weeks = n_weeks,
