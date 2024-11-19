@@ -111,7 +111,7 @@ ts_to_inc <- cmpfun(ts_to_inc_)
 
 SIR_model_ <- function(params) {
     solution_out <- generate_ts(params)
-    weekly_inc <- ts_to_inc(solution_out, params$n_mm, params$n_aa, params$p_reported, params$pop_top, params$population_reg_age)
+    weekly_inc <- ts_to_inc(solution_out, params$n_mm, params$n_aa, params$p_reported, params$pop_tot, params$population_reg_age)
     return(weekly_inc)
 }
 

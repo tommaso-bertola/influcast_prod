@@ -10,7 +10,10 @@ fitness_methods_chooser <- function(fitness_evaluation_method) {
         "peak_squared" = "fitness_methods/peak_squared_fitness.R",
         "peak_squared_no_thr" = "fitness_methods/peak_squared_no_thr_fitness.R",
         "peak_squared_no_thr_4" = "fitness_methods/peak_squared_no_thr_fitness_4.R",
-        "national_fitness" = "fitness_methods/sum_fitness_multi_3_national.R"
+        "national_fitness" = "fitness_methods/sum_fitness_multi_3_national.R",
+        "per_thousand_reg_age" = "fitness_methods/sum_fitness_multi_4_national.R",
+        "per_thousand_nat_only" = "fitness_methods/sum_fitness_multi_4_national_only.R",
+        "per_thousand_nat_reg" = "fitness_methods/sum_fitness_multi_4_national_regional.R"
     )
 
     if (!fitness_evaluation_method %in% names(fitness_files)) {
