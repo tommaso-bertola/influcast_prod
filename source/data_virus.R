@@ -11,7 +11,7 @@ virus_perc <- function(n_week = NULL) {
         return(n_week)
     }
 
-    virus_percentage <- virus_perc[virus_perc$week <= n_week_virological(n_week), -1]
+    virus_percentage <- as.data.frame(virus_perc[virus_perc$week <= n_week_virological(n_week), -1])
 
     return(virus_percentage)
 }

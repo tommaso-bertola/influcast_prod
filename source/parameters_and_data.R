@@ -1,35 +1,23 @@
 get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "radiation", age_groups = NULL) {
     source("source/data_initial_conditions.R", local = TRUE)
     data <- initial_data(season, n_week, mobility_type, age_groups)
-    m <- as.data.frame(data$abs_incidence_reg_age)
-    m_2 <- as.data.frame(data$incidence_reg_age)
-    n <- as.data.frame(data$abs_incidence_reg)
-    n_2 <- as.data.frame(data$incidence_reg)
-    incid_nat <- as.data.frame(data$incidence_nat)
-    abs_incid_nat <- as.data.frame(data$abs_incidence_nat)
-    virus_percentage <- as.data.frame(data$virus_percentage)
-    colnames(m) <- seq_len(ncol(m))
-    colnames(m_2) <- seq_len(ncol(m))
-    colnames(n) <- seq_len(ncol(n))
-    colnames(n_2) <- seq_len(ncol(n))
-    colnames(incid_nat) <- seq_len(ncol(incid_nat))
     return(list(
         tables = list(
             incidences = list(
                 absolute = list(
-                    abs_incidence_reg_age = m,
-                    abs_incidence_reg = n,
-                    abs_incidence_nat = abs_incid_nat
+                    abs_incidence_reg_age = data$abs_incidence_reg_age,
+                    abs_incidence_reg = data$abs_incidence_reg,
+                    abs_incidence_nat = data$abs_incidence_nat
                 ),
                 per_thousand = list(
-                    incidence_reg_age = m_2,
-                    incidence_reg = n_2,
-                    incidence_nat = incid_nat
+                    incidence_reg_age = data$incidence_reg_age,
+                    incidence_reg = data$incidence_reg,
+                    incidence_nat = data$incidence_nat
                 )
             ),
             population_reg_age = data$population_reg_age,
             population_reg = data$population_reg,
-            virus_percentage = virus_percentage
+            virus_percentage = data$virus_percentage
         ),
         params = list(
             n_weeks_simu = data$n_weeks,
@@ -44,7 +32,7 @@ get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "
             region_names = data$region_names,
             region_names_nuts2 = data$region_names_nuts2,
             age_group_names = data$age_group_names,
-            virus_percentage = virus_percentage,
+            virus_percentage = data$virus_percentage,
             mobility = data$mobility,
             pop_reg = data$population_reg,
             c_matrix = data$c_matrix

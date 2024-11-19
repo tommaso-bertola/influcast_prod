@@ -16,3 +16,4 @@ copy_script.sh
 
 *.DS_Store
 *.old
+data/epidemiological/influcast/regions.txt

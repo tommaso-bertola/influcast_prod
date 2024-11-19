@@ -4,40 +4,10 @@ library(stringr)
 library(readr)
 library(reshape2)
 incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis) {
+    source("source/season_limiter.R", local = TRUE)
     # Supporting tables to get the right correspondence
     region_names_correspondence <- data.frame(incidence_db = c("Piedmont", "Aosta Valley", "Lombardy", "AP Bolzano", "AP Trento", "Veneto", "Friuli-Venezia Giulia", "Liguria", "Emilia-Romagna", "Tuscany", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Apulia", "Basilicata", "Calabria", "Sicily", "Sardinia"), census_db = c("Piemonte", "Valle d'Aosta / Vallée d'Aoste", "Lombardia", "Provincia Autonoma Bolzano / Bozen", "Provincia Autonoma Trento", "Veneto", "Friuli-Venezia Giulia", "Liguria", "Emilia-Romagna", "Toscana", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Puglia", "Basilicata", "Calabria", "Sicilia", "Sardegna"))
     nuts_custom <- data.frame(region_eng = c("Piemonte", "Valle d'Aosta", "Liguria", "Lombardia", "Trentino-Alto Adige", "Trentino-Alto Adige", "Veneto", "Friuli-Venezia Giulia", "Emilia-Romagna", "Toscana", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Apulia", "Basilicata", "Calabria", "Sicily", "Sardegna"), region_3 = c("Piedmont", "Aosta Valley", "Liguria", "Lombardy", "AP Bolzano", "AP Trento", "Veneto", "Friuli-Venezia Giulia", "Emilia-Romagna", "Tuscany", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Apulia", "Basilicata", "Calabria", "Sicily", "Sardinia"), region = c("Piemonte", "Valle d'Aosta/Vallée d'Aoste", "Liguria", "Lombardia", "PA Bolzano", "PA Trento", "Veneto", "Friuli-Venezia Giulia", "Emilia-Romagna", "Toscana", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Puglia", "Basilicata", "Calabria", "Sicilia", "Sardegna"), nuts2 = c("ITC1", "ITC2", "ITC3", "ITC4", "ITD1", "ITD2", "ITD3", "ITD4", "ITD5", "ITE1", "ITE2", "ITE3", "ITE4", "ITF1", "ITF2", "ITF3", "ITF4", "ITF5", "ITF6", "ITG1", "ITG2"))
-
-    season_limiter <- function(n_week, season) {
-        year <- as.numeric(substr(season, 1, 4))
-        year_week_list <- c()
-        if (is.null(n_week)) {
-            for (i in c(40:52)) {
-                year_week_list <- c(year_week_list, paste0(year, "-", i))
-            }
-            for (i in c(1:9)) {
-                year_week_list <- c(year_week_list, paste0(year + 1, "-0", i))
-            }
-            for (i in c(10:30)) {
-                year_week_list <- c(year_week_list, paste0(year + 1, "-", i))
-            }
-        } else if (n_week > 40) {
-            for (i in c(40:n_week)) {
-                year_week_list <- c(year_week_list, paste0(year, "-", i))
-            }
-        } else {
-            for (i in c(40:52)) {
-                year_week_list <- c(year_week_list, paste0(year, "-", i))
-            }
-            for (i in c(1:n_week)) {
-                if (i < 10) {
-                    i <- paste0("0", i)
-                }
-                year_week_list <- c(year_week_list, paste0(year + 1, "-", i))
-            }
-        }
-        return(year_week_list)
-    }
 
     # Incidence data
     # file_incidence <- "https://github.com/fbranda/influnet/raw/main/data-aggregated/epidemiological_data/regional_cases.csv"
@@ -82,7 +52,12 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
             nuts2 = str_replace_all(tolower(nuts2), " ", "-"),
         ) %>%
         pivot_wider(values_from = reg_inc, names_from = nuts2) %>%
-        select(-year_week)
+        select(-year_week) %>%
+        as.data.frame() %>%
+        {
+            colnames(.) <- seq_along(.)
+            .
+        }
 
     if (length(age_group_names) == 4) {
         # compute absolute incidence combining census and incidence
@@ -102,7 +77,12 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
                 variable = str_sub(str_sub(variable, start = 5), end = -5)
             ) %>%
             pivot_wider(values_from = value, names_from = c("nuts2", "variable")) %>%
-            select(-year_week)
+            select(-year_week) %>%
+            as.data.frame() %>%
+            {
+                colnames(.) <- seq_along(.)
+                .
+            }
     } else if (length(age_group_names) == 1) {
         abs_inc_reg_age <- abs_inc_reg
     } else {
@@ -120,7 +100,12 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
         select(-variable) %>%
         mutate(nuts2 = str_replace_all(tolower(nuts2), " ", "-")) %>%
         pivot_wider(values_from = value, names_from = nuts2) %>%
-        select(-year_week)
+        select(-year_week) %>%
+        as.data.frame() %>%
+        {
+            colnames(.) <- seq_along(.)
+            .
+        }
 
     if (length(age_group_names) == 4) {
         # extracting incidence for region and age
@@ -133,7 +118,12 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
                 variable = str_sub(str_sub(variable, start = 5), end = -1)
             ) %>%
             pivot_wider(values_from = value, names_from = c("region", "variable")) %>%
-            select(-year_week)
+            select(-year_week) %>%
+            as.data.frame() %>%
+            {
+                colnames(.) <- seq_along(.)
+                .
+            }
     } else {
         inc_reg_age <- inc_reg
     }
@@ -145,11 +135,21 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
 
     inc_nat <- inc_nat_tmp %>%
         mutate(incidence_nat = tot_cases / tot_pop * 1000) %>%
-        select(incidence_nat)
+        select(incidence_nat) %>%
+        as.data.frame() %>%
+        {
+            colnames(.) <- seq_along(.)
+            .
+        }
 
     abs_inc_nat <- inc_nat_tmp %>%
         mutate(abs_incidence_nat = tot_cases) %>%
-        select(abs_incidence_nat)
+        select(abs_incidence_nat) %>%
+        as.data.frame() %>%
+        {
+            colnames(.) <- seq_along(.)
+            .
+        }
 
     return(list(
         inc_nat = inc_nat,
