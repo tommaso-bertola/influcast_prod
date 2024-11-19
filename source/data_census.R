@@ -105,6 +105,7 @@ census <- function(age_groups = NULL) {
         region_names_nuts2 = as.vector(unlist(region_nuts2)),
         age_group_names = as.vector(age_group_names),
         population_reg_age = population_reg_age,
-        population_reg = population_reg
+        population_reg = population_reg,
+        region_name_population = data.frame(nuts = region_nuts2, population = population_reg)
     ))
 }

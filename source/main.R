@@ -23,6 +23,7 @@ if (length(args) != 0) {
     maxit_ <- as.numeric(args[6]) # maximum number of iterations
     runs_ <- as.numeric(args[7]) # number of runs
     swarmsize_ <- as.numeric(args[8]) # change swarm size
+    season_ <- args[9]
 } else {
     stop("Specify parameters to the script\n")
     quit()
@@ -69,7 +70,7 @@ parallel_PSO <- function(
     gnu_parallel_string = unique_string_,
     epidemic_model = epidemic_model_,
     fitness_method = fitness_method_,
-    season_data = "2023-2024",
+    season_data = season_,
     n_week = weeks_,
     mobility_type = "radiation",
     fitness_tolerance = 0.1,
