@@ -8,6 +8,7 @@ output/*
 runner.sh
 machines.txt
 copy_script.sh
+task_to_execute.sh
 
 .Rproj.user
 .Rhistory
