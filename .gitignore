@@ -5,10 +5,8 @@ data/data_generators/check_files/*
 data/data_generators/raw_data_sources/*
 data/epidemiological/branda/*
 output/*
-runner.sh
+
 machines.txt
-copy_script.sh
-task_to_execute.sh
 
 .Rproj.user
 .Rhistory
@@ -18,3 +16,5 @@ task_to_execute.sh
 *.DS_Store
 *.old
 data/epidemiological/influcast/regions.txt
+scripts/*
+!scripts/download_new_data.sh
