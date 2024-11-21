@@ -4,14 +4,14 @@ library(tidyr)
 library(magrittr)
 library(stringr)
 # allow arguments
-# args <- commandArgs(trailingOnly = TRUE)
-# if (length(args) != 0) {
-#     unique_string_ <- args[1]
-# } else {
-#     stop("Specify parameters to the script unifying results\n")
-#     quit(status = 1)
-# }
-unique_string_ <- "4fb73"
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) != 0) {
+    unique_string_ <- args[1]
+} else {
+    stop("Specify parameters to the script unifying results\n")
+    quit(status = 1)
+}
+# unique_string_ <- "4fb73"
 national_file_name <- list.files(path = "output", pattern = paste0("national_quantiles_", unique_string_, ".rds"), full.names = TRUE)
 regional_file_name <- list.files(path = "output", pattern = paste0("regional_quantiles_", unique_string_, ".rds"), full.names = TRUE)
 

@@ -4,15 +4,15 @@ library(jsonlite)
 source("source/lambda_generator.R")
 source("source/model_chooser.R")
 
-# # allow arguments
-# args <- commandArgs(trailingOnly = TRUE)
-# if (length(args) != 0) {
-#     unique_string_ <- args[1]
-# } else {
-#     stop("Specify parameters to the script unifying results\n")
-#     quit(status = 1)
-# }
-unique_string_ <- "4fb73"
+# allow arguments
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) != 0) {
+    unique_string_ <- args[1]
+} else {
+    stop("Specify parameters to the script unifying results\n")
+    quit(status = 1)
+}
+
 file_name <- paste0("output/", unique_string_, "_results.json")
 
 influcast_summariser <- function(dataframe) {
