@@ -25,7 +25,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
 
     # region incidence
     region_wider <- df %>%
-        select(region, code,nuts2, anno, settimana, incidenza) %>%
+        select(region, code, nuts2, anno, settimana, incidenza) %>%
         mutate(
             year_week = paste0(anno, "-", settimana),
             region_code = paste0(region, "-", code, "-", nuts2)
@@ -61,9 +61,11 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
         region_incidence_complete <- region_incidence_complete %>%
             filter(year_week <= max_week_filter)
     }
+    current_week <- as.character(max(italy_incidence_complete$year_week))
 
     return(list(
         italy_incidence = italy_incidence_complete,
-        region_incidence = region_incidence_complete
+        region_incidence = region_incidence_complete,
+        current_week = current_week
     ))
 }

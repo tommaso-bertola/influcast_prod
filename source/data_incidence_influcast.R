@@ -37,7 +37,7 @@ incidence <- function(season = "2023-2024", n_week = NULL, italian_population, r
             .
         }
     abs_inc_reg_age <- abs_inc_reg
-
+    current_week <- df$current_week
     return(list(
         inc_nat = inc_nat,
         abs_inc_nat = abs_inc_nat,
@@ -45,6 +45,7 @@ incidence <- function(season = "2023-2024", n_week = NULL, italian_population, r
         inc_reg_age = inc_reg_age,
         n_weeks = n_weeks,
         abs_inc_reg = abs_inc_reg,
-        abs_inc_reg_age = abs_inc_reg_age
+        abs_inc_reg_age = abs_inc_reg_age,
+        current_week = current_week
     ))
 }

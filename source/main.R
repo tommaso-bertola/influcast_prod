@@ -26,7 +26,7 @@ if (length(args) != 0) {
     season_ <- args[9]
 } else {
     stop("Specify parameters to the script\n")
-    quit()
+    quit(status = 1)
 }
 
 # %dopar% parallelizes via future

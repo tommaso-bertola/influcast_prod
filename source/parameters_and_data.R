@@ -35,7 +35,8 @@ get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "
             virus_percentage = data$virus_percentage,
             mobility = data$mobility,
             pop_reg = data$population_reg,
-            c_matrix = data$c_matrix
+            c_matrix = data$c_matrix,
+            current_week = data$current_week
         )
     ))
 }

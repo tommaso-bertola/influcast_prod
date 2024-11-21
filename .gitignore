@@ -18,3 +18,6 @@ machines.txt
 data/epidemiological/influcast/regions.txt
 scripts/*
 !scripts/download_new_data.sh
+
+uploading_predictions/current_week.txt
+uploading_predictions/*.png

@@ -36,7 +36,8 @@ initial_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "r
             population_reg = census_df$population_reg,
             virus_percentage = virus_percentage,
             mobility = mobility_matr,
-            c_matrix = c_matrix_data
+            c_matrix = c_matrix_data,
+            current_week = NULL
         ))
     } else if (season == "2024-2025") {
         source("source/data_incidence_influcast.R", local = TRUE)
@@ -66,7 +67,8 @@ initial_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "r
             population_reg = census_df$population_reg,
             virus_percentage = virus_percentage,
             mobility = mobility_matr,
-            c_matrix = c_matrix_data
+            c_matrix = c_matrix_data,
+            current_week = incidence_df$current_week
         ))
     }
 }

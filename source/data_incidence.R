@@ -87,7 +87,7 @@ incidence <- function(season = "2023-2024", n_week = NULL, age_group_names, dcis
         abs_inc_reg_age <- abs_inc_reg
     } else {
         stop("age_group_names must be of length 1 or 4")
-        quit()
+        quit(status = 1)
     }
 
     # some data to output

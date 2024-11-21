@@ -3,14 +3,14 @@ library(dplyr)
 library(tidyr)
 
 # allow arguments
-args <- commandArgs(trailingOnly = TRUE)
-if (length(args) != 0) {
-    unique_string_ <- args[1]
-} else {
-    stop("Specify parameters to the script unifying results\n")
-    quit(status = 1)
-}
-# unique_string_ <- "4fb73"
+# args <- commandArgs(trailingOnly = TRUE)
+# if (length(args) != 0) {
+#     unique_string_ <- args[1]
+# } else {
+#     stop("Specify parameters to the script unifying results\n")
+#     quit(status = 1)
+# }
+unique_string_ <- "4fb73"
 
 target_files <- list.files("sim_results",
     pattern = paste0("*", unique_string_, ".*.json"),
@@ -31,6 +31,7 @@ for (file in target_files) {
 parameters <- df$parameters
 epidemic_model <- df$epidemic_model
 complete_list_parameters <- df$complete_list_parameters
+current_week <- df$complete_list_parameters$current_week
 original_data <- df$original_data
 # write to file
 writeLines(

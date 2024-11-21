@@ -4,14 +4,14 @@ library(jsonlite)
 source("source/lambda_generator.R")
 source("source/model_chooser.R")
 
-# allow arguments
-args <- commandArgs(trailingOnly = TRUE)
-if (length(args) != 0) {
-    unique_string_ <- args[1]
-} else {
-    stop("Specify parameters to the script unifying results\n")
-    quit(status = 1)
-}
+# # allow arguments
+# args <- commandArgs(trailingOnly = TRUE)
+# if (length(args) != 0) {
+#     unique_string_ <- args[1]
+# } else {
+#     stop("Specify parameters to the script unifying results\n")
+#     quit(status = 1)
+# }
 unique_string_ <- "4fb73"
 file_name <- paste0("output/", unique_string_, "_results.json")
 
@@ -25,14 +25,14 @@ influcast_summariser <- function(dataframe) {
     )
     name_q <- paste0("q", quantiles[1] * 100)
     output <- dataframe %>% summarise(
-        {{ name_q }} := quantile(values, quantiles[1], na.rm = T),
+        {{ name_q }} := quantile(values, quantiles[1], na.rm = TRUE),
         .groups = "drop"
     )
 
     for (i in c(2:(length(quantiles)))) {
         name_q <- paste0("q", quantiles[i] * 100)
         tmp <- dataframe %>% summarise(
-            {{ name_q }} := quantile(values, quantiles[i], na.rm = T),
+            {{ name_q }} := quantile(values, quantiles[i], na.rm = TRUE),
             .groups = "drop"
         )
         output <- cbind(output, tmp[, ncol(tmp)])
@@ -102,6 +102,7 @@ converged_parameters_fn <- function(results, threshold = 1000, only_converged = 
 }
 
 pso_data <- fromJSON(file_name)
+current_week <- pso_data$complete_list_parameters$current_week
 results <- results_fn(pso_data)
 converged_parameters <- converged_parameters_fn(results)
 population_reg <- pop_reg_fn(pso_data)
@@ -162,7 +163,23 @@ quant_regional <- quantiles_regions %>%
     mutate(
         across(starts_with("q"), ~ . / pop_reg * 1000)
     )
+
 quant_national <- quantiles_national %>%
     mutate(
         across(starts_with("q"), ~ . / pop_national * 1000)
     )
+
+saveRDS(
+    list(
+        quantiles = quant_regional,
+        current_week = current_week
+    ),
+    paste0("output/regional_quantiles_", unique_string_, ".rds")
+)
+saveRDS(
+    list(
+        quantiles = quant_national,
+        current_week = current_week
+    ),
+    paste0("output/national_quantiles_", unique_string_, ".rds")
+)
