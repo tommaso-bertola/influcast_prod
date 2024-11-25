@@ -1,4 +1,4 @@
-get_real_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "radiation", age_groups = NULL) {
+get_real_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL) {
     source("source/data_initial_conditions.R", local = TRUE)
     data <- initial_data(season, n_week, mobility_type, age_groups)
     return(list(

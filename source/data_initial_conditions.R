@@ -7,7 +7,7 @@ library(reshape2)
 source("source/data_census.R")
 source("source/data_mobility.R")
 
-initial_data <- function(season = "2023-2024", n_week = NULL, mobility_type = "radiation", age_groups = NULL) {
+initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL) {
     if (season == "2023-2024") {
         source("source/data_incidence.R", local = TRUE)
         source("source/data_virus.R", local = TRUE)

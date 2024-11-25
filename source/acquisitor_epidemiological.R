@@ -26,6 +26,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
     # region incidence
     region_wider <- df %>%
         select(region, code, nuts2, anno, settimana, incidenza) %>%
+        arrange(nuts2)%>%
         mutate(
             year_week = paste0(anno, "-", settimana),
             region_code = paste0(region, "-", code, "-", nuts2)

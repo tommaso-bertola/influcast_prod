@@ -3,7 +3,7 @@ library(tidyr)
 library(stringr)
 library(readr)
 library(reshape2)
-incidence <- function(season = "2023-2024", n_week = NULL, italian_population, reg_pop) {
+incidence <- function(season = "2024-2025", n_week = NULL, italian_population, reg_pop) {
     # source("source/season_limiter.R", local = TRUE)
     source("source/data_census.R", local = TRUE)
     # Supporting tables to get the right correspondence
