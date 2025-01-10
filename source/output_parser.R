@@ -15,7 +15,8 @@ regions_influcast <- read.csv("/home/ubuntu/influcast_prod/data/epidemiological/
 
 
 raw_incidence_national <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
-    mutate(orizzonte = settimana - max(settimana)) %>%
+    mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
+    select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
 
 files <- list.files("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest", pattern = ".*\\.csv", full.names = TRUE)
@@ -30,7 +31,8 @@ for (file in files) {
 }
 raw_incidence_regional <- raw_incidence_regional %>%
     pivot_wider(names_from = region, values_from = incidenza) %>%
-    mutate(orizzonte = settimana - max(settimana)) %>%
+    mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
+    select(-ori) %>%
     melt(id.vars = c("orizzonte", "anno", "settimana")) %>%
     left_join(regions_influcast, by = c("variable" = "region")) %>%
     arrange(nuts2) %>%
@@ -44,7 +46,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-# unique_string_ <- "2df8d"
+# unique_string_ <- "ec5be"
 national_file_name <- list.files(path = "output", pattern = paste0("national_quantiles_", unique_string_, ".rds"), full.names = TRUE)
 regional_file_name <- list.files(path = "output", pattern = paste0("regional_quantiles_", unique_string_, ".rds"), full.names = TRUE)
 
@@ -149,6 +151,9 @@ plot_regional <- regional %>%
     geom_ribbon(aes(x = week, ymin = q35, ymax = q65), fill = "#6b6a6a", alpha = 0.2) +
     geom_ribbon(aes(x = week, ymin = q40, ymax = q60), fill = "#6b6a6a", alpha = 0.2) +
     geom_ribbon(aes(x = week, ymin = q45, ymax = q55), fill = "#6b6a6a", alpha = 0.2) +
+    geom_linerange(aes(x = week, ymin = q2.5, ymax = q97.5), color = "black", position = position_nudge(x = 0.15)) +
+    geom_linerange(aes(x = week, ymin = q5, ymax = q95), color = "black", position = position_nudge(x = 0.07)) +
+    geom_linerange(aes(x = week, ymin = q25, ymax = q75), color = "black", position = position_nudge(x = 0.0)) +
     geom_point(data = raw_incidence_regional, aes(x = orizzonte, y = value), color = "black") +
     geom_line(data = raw_incidence_regional, aes(x = orizzonte, y = value), color = "black") +
     geom_vline(xintercept = 0, linetype = "dashed") +
@@ -171,6 +176,9 @@ plot_national <- national %>%
     geom_ribbon(aes(ymin = `35`, ymax = `65`), fill = "#ff0000", alpha = 0.1) +
     geom_ribbon(aes(ymin = `40`, ymax = `60`), fill = "#ff0000", alpha = 0.1) +
     geom_ribbon(aes(ymin = `45`, ymax = `55`), fill = "#ff0000", alpha = 0.1) +
+    geom_linerange(aes(ymin = `2.5`, ymax = `97.5`), color = "black", position = position_nudge(x = 0.1)) +
+    geom_linerange(aes(ymin = `5`, ymax = `95`), color = "black", position = position_nudge(x = 0.05)) +
+    geom_linerange(aes(ymin = `25`, ymax = `75`), color = "black", position = position_nudge(x = 0.0)) +
     geom_vline(xintercept = 0, linetype = "dashed") +
     geom_point(data = raw_incidence_national, aes(x = orizzonte, y = incidenza), color = "black") +
     geom_line(data = raw_incidence_national, aes(x = orizzonte, y = incidenza), color = "black") +
