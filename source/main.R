@@ -19,7 +19,7 @@ if (length(args) != 0) {
     fitness_method_ <- strsplit(epi_fit_age_, "-")[[1]][2]
     age_groups_ <- as.numeric(strsplit(epi_fit_age_, "-")[[1]][3])
     counter_ <- as.numeric(args[4]) # dummy index to compute more iterations
-    weeks_ <- as.numeric(args[5]) # index to check how many weeks to include
+    weeks_ <- args[5] # index to check how many weeks to include
     maxit_ <- as.numeric(args[6]) # maximum number of iterations
     runs_ <- as.numeric(args[7]) # number of runs
     swarmsize_ <- as.numeric(args[8]) # change swarm size
