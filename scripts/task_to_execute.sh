@@ -113,6 +113,8 @@ FILE_CSV="$FILE.csv"
 keybase chat upload $msg  uploading_predictions/$(echo $FILE)_regional.png
 keybase chat upload $msg  uploading_predictions/$(echo $FILE)_national.png
 keybase chat upload $msg  uploading_predictions/$FILE.csv
+cp scripts/runner.sh uploading_predictions/runner.txt
+keybase chat upload $msg  uploading_predictions/runner.txt
 if [ $? -ne 0 ]; then
     notify "Error in sending image on keybase. Exiting script." "error"
     exit 1

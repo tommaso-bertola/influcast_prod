@@ -1,8 +1,9 @@
-times=(1)
-week=(50)
+times=(1 2 3 4 5)
+week=(NA)
+# this should be 9, NA throws an error in the ode solver
 season=('2024-2025')
 maxiter=(70)
-runs=(10)
+runs=(200)
 swarmsize=(70)
 if [ -z "$1" ]; then
     unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
