@@ -56,12 +56,12 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
         full_join(total_year_weeks) %>%
         arrange(year_week)
 
-    if (!is.null(max_week_filter)) {
-        italy_incidence_complete <- italy_incidence_complete %>%
-            filter(year_week <= max_week_filter)
-        region_incidence_complete <- region_incidence_complete %>%
-            filter(year_week <= max_week_filter)
-    }
+    # if (!is.null(max_week_filter)) {
+    #     italy_incidence_complete <- italy_incidence_complete %>%
+    #         filter(year_week <= max_week_filter)
+    #     region_incidence_complete <- region_incidence_complete %>%
+    #         filter(year_week <= max_week_filter)
+    # }
     current_week <- as.character(max(italy_incidence_complete$year_week))
 
     return(list(
