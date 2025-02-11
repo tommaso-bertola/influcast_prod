@@ -105,9 +105,76 @@ ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, pop_r
     ))
 }
 
+ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, pop_reg_age) {
+    singular_ts <- get_singular_ts(solution_out, n_mm, n_aa)
+    new_inf_i <- singular_ts$xi
+    new_inf_ii <- singular_ts$xii
+    new_rec_i <- singular_ts$r_1
+    new_rec_ii <- singular_ts$r_2
+
+    strain_1 <- new_inf_i + new_rec_i
+    strain_2 <- new_inf_ii + new_rec_ii
+
+    # percent_strains <- data.frame(strain_1, strain_2) %>%
+    #     apply(., 2, diff) %>%
+    #     as.data.frame() %>%
+    #     mutate(week = (row(.[1]) - 1) %/% 7 + 1) %>%
+    #     group_by(week) %>%
+    #     summarize(across(c(strain_1, strain_2), ~ sum(.) / sum(strain_1 + strain_2) * 100)) %>%
+    #     as.data.frame() %>%
+    #     select(-week)
+    # s <- singular_ts$s
+
+    # -(S(t+1) - S(t))
+    abs_inc_a <- -apply(as.data.frame(strain_1), 2, diff) %>%
+        as.data.frame() %>%
+        mutate(week = (row(.) - 1) %/% 7 + 1) %>%
+        group_by(week) %>%
+        summarize(across(everything(), sum)) %>%
+        select(-starts_with("week")) %>%
+        mutate_all(~ round(. * p_reported, 0)) %>%
+        as.data.frame()
+
+    abs_inc_b <- -apply(as.data.frame(strain_2), 2, diff) %>%
+        as.data.frame() %>%
+        mutate(week = (row(.) - 1) %/% 7 + 1) %>%
+        group_by(week) %>%
+        summarize(across(everything(), sum)) %>%
+        select(-starts_with("week")) %>%
+        mutate_all(~ round(. * p_reported, 0)) %>%
+        as.data.frame()
+
+    abs_national_inc_a <- rowSums(abs_inc_a)
+    abs_national_inc_b <- rowSums(abs_inc_b)
+    if (nrow(abs_inc_a) != length(abs_national_inc_a)) {
+        stop("Error in ts_to_inc: inc and national_inc have different number of rows")
+        quit()
+    }
+    if (nrow(abs_inc_b) != length(abs_national_inc_b)) {
+        stop("Error in ts_to_inc: inc and national_inc have different number of rows")
+        quit()
+    }
+    national_inc_a <- abs_national_inc_a / pop_national * 1000
+    national_inc_b <- abs_national_inc_b / pop_national * 1000
+    inc_a <- sweep(abs_inc_a, 2, unlist(pop_reg_age), FUN = "/") * 1000
+    inc_b <- sweep(abs_inc_b, 2, unlist(pop_reg_age), FUN = "/") * 1000
+
+    return(list(
+        abs_inc_a = abs_inc_a,
+        abs_inc_b = abs_inc_b,
+        abs_national_inc_a = abs_national_inc_a,
+        abs_national_inc_b = abs_national_inc_b,
+        inc_a = inc_a,
+        inc_b = inc_b,
+        national_inc_a = national_inc_a,
+        national_inc_b = national_inc_b,
+    ))
+}
+
 generate_ts <- cmpfun(generate_ts_)
 get_singular_ts <- cmpfun(get_singular_ts_)
 ts_to_inc <- cmpfun(ts_to_inc_)
+ts_to_inc_ab <- cmpfun(ts_to_inc_ab_)
 
 SIR_model_ <- function(params) {
     solution_out <- generate_ts(params)
@@ -115,7 +182,14 @@ SIR_model_ <- function(params) {
     return(weekly_inc)
 }
 
+SIR_model_ab_ <- function(params) {
+    solution_out <- generate_ts(params)
+    weekly_inc <- ts_to_inc_ab(solution_out, params$n_mm, params$n_aa, params$p_reported, params$pop_tot, params$population_reg_age)
+    return(weekly_inc)
+}
+
 local_ep_mod <- cmpfun(SIR_model_)
+local_ep_mod_ab <- cmpfun(SIR_model_ab_)
 
 bounds_factory <- function() {
     register_bound <- function(list_orig, prefix, lower, upper, num = 1) {

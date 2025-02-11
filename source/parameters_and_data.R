@@ -1,6 +1,6 @@
-get_real_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL) {
+get_real_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL) {
     source("source/data_initial_conditions.R", local = TRUE)
-    data <- initial_data(season, n_week, mobility_type, age_groups)
+    data <- initial_data(season, n_week, mobility_type, age_groups, signal)
     return(list(
         tables = list(
             incidences = list(
