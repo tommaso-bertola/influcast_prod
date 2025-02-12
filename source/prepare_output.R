@@ -86,7 +86,7 @@ pop_reg_age_fn <- function(pso_data) {
         )
     pop_reg_age
 }
-converged_parameters_fn <- function(results, threshold = 1000, only_converged = FALSE) {
+converged_parameters_fn <- function(results, threshold = Inf, only_converged = FALSE) {
     results <- results %>%
         as.data.frame() %>%
         filter(exitvalue <= threshold)
@@ -145,6 +145,21 @@ for (i in seq_len(n_iterations)) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
             next
         }
+        r <- as.data.frame(inc) %>%
+            rename_with(~ gsub("X", "", .)) %>%
+            mutate(week = seq_len(nrow(.))) %>%
+            pivot_longer(cols = -week, values_to = "values", names_to = "patch_age") %>%
+            mutate(
+                realization = i,
+                n_patch = ((as.numeric(patch_age) - 1) %% params$n_mm) + 1,
+                n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
+            )
+        melted_incidence <- rbind(melted_incidence, r)
+    } else {
+        if (any(is.na(inc_a)) || any(is.na(inc_b))) {
+            cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
         r_a <- as.data.frame(inc_a) %>%
             rename_with(~ gsub("X", "", .)) %>%
             mutate(week = seq_len(nrow(.))) %>%
@@ -165,21 +180,6 @@ for (i in seq_len(n_iterations)) {
             )
         melted_incidence_a <- rbind(melted_incidence_a, r_a)
         melted_incidence_b <- rbind(melted_incidence_b, r_b)
-    } else {
-        if (any(is.na(inc_a)) || any(is.na(inc_b))) {
-            cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
-            next
-        }
-        r <- as.data.frame(inc) %>%
-            rename_with(~ gsub("X", "", .)) %>%
-            mutate(week = seq_len(nrow(.))) %>%
-            pivot_longer(cols = -week, values_to = "values", names_to = "patch_age") %>%
-            mutate(
-                realization = i,
-                n_patch = ((as.numeric(patch_age) - 1) %% params$n_mm) + 1,
-                n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
-            )
-        melted_incidence <- rbind(melted_incidence, r)
     }
 }
 
@@ -259,6 +259,6 @@ if (signal != "AB") {
             quantiles = list(A = quant_national_a, notA = quant_national_b),
             current_week = current_week
         ),
-        paste0("output/national_quantiles", unique_string_, ".rds")
+        paste0("output/national_quantiles_", unique_string_, ".rds")
     )
 }

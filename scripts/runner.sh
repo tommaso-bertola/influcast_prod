@@ -1,9 +1,9 @@
-times=(1 2 3 4 5)
+times=(1 2)
 week=(NA)
 # this should be 9, NA throws an error in the ode solver
 season=('2024-2025')
-maxiter=(70)
-runs=(200)
+maxiter=(100)
+runs=(100)
 swarmsize=(70)
 signal=('AB') # 'ILI'
 if [ -z "$1" ]; then

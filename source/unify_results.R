@@ -26,7 +26,7 @@ for (file in target_files) {
         results <- df$results
     }
 }
-
+signal <- df$signal
 parameters <- df$parameters
 epidemic_model <- df$epidemic_model
 complete_list_parameters <- df$complete_list_parameters
@@ -35,6 +35,7 @@ original_data <- df$original_data
 # write to file
 writeLines(
     toJSON(list(
+        signal = signal,
         parameters = parameters,
         complete_list_parameters = complete_list_parameters,
         epidemic_model = epidemic_model,

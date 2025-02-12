@@ -126,7 +126,7 @@ ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, po
     # s <- singular_ts$s
 
     # -(S(t+1) - S(t))
-    abs_inc_a <- -apply(as.data.frame(strain_1), 2, diff) %>%
+    abs_inc_a <- apply(as.data.frame(strain_1), 2, diff) %>%
         as.data.frame() %>%
         mutate(week = (row(.) - 1) %/% 7 + 1) %>%
         group_by(week) %>%
@@ -135,7 +135,7 @@ ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, po
         mutate_all(~ round(. * p_reported, 0)) %>%
         as.data.frame()
 
-    abs_inc_b <- -apply(as.data.frame(strain_2), 2, diff) %>%
+    abs_inc_b <- apply(as.data.frame(strain_2), 2, diff) %>%
         as.data.frame() %>%
         mutate(week = (row(.) - 1) %/% 7 + 1) %>%
         group_by(week) %>%
@@ -167,7 +167,7 @@ ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, po
         inc_a = inc_a,
         inc_b = inc_b,
         national_inc_a = national_inc_a,
-        national_inc_b = national_inc_b,
+        national_inc_b = national_inc_b
     ))
 }
 
