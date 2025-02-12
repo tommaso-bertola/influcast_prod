@@ -46,7 +46,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-# unique_string_ <- "ec5be"
+# unique_string_ <- "4bc66"
 national_file_name <- list.files(path = "output", pattern = paste0("national_quantiles_", unique_string_, ".rds"), full.names = TRUE)
 regional_file_name <- list.files(path = "output", pattern = paste0("regional_quantiles_", unique_string_, ".rds"), full.names = TRUE)
 

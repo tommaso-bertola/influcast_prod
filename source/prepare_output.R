@@ -12,7 +12,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-
+# unique_string_ <- "4bc66"
 file_name <- paste0("output/", unique_string_, "_results.json")
 
 influcast_summariser <- function(dataframe) {

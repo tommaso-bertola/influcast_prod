@@ -10,7 +10,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-
+# unique_string_ <- "4bc66"
 target_files <- list.files("sim_results",
     pattern = paste0("*", unique_string_, ".*.json"),
     full.names = TRUE,

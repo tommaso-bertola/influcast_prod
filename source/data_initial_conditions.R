@@ -24,7 +24,7 @@ initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "r
 
             incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population)
             virus_percentage <- virus_perc(n_week = incidence_df$n_weeks)
-            current_week <- incidence_df$n_weeks
+            current_week <- incidence_df$current_week
         } else if (signal == "AB") {
             stop("Signal AB not implemented yet")
             quit(status = 1)
