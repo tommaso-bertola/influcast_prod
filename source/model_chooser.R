@@ -21,6 +21,7 @@ model_chooser <- function(epidemic_model) {
         ep_mod = local_ep_mod,
         x2params_ = local_x2params_,
         x2params = local_x2params,
-        bounds = local_bounds
+        bounds = local_bounds,
+        ep_mod_ab = "local_ep_mod_ab"
     ))
 }

@@ -5,6 +5,7 @@ season=('2024-2025')
 maxiter=(70)
 runs=(200)
 swarmsize=(70)
+signal=("ILI") #"A" "B" "AB" "ILI"
 if [ -z "$1" ]; then
     unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 else
@@ -25,4 +26,4 @@ desc="${unique_string}_test_national_regional_fit"
 LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 
 # parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]}
-parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]}
+parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}

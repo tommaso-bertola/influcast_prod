@@ -105,9 +105,13 @@ ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, pop_r
     ))
 }
 
+ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, pop_reg_age) {
+}
+
 generate_ts <- cmpfun(generate_ts_)
 get_singular_ts <- cmpfun(get_singular_ts_)
 ts_to_inc <- cmpfun(ts_to_inc_)
+ts_to_inc_ab <- cmpfun(ts_to_inc_ab_)
 
 SIR_model_ <- function(params) {
     solution_out <- generate_ts(params)
@@ -115,7 +119,12 @@ SIR_model_ <- function(params) {
     return(weekly_inc)
 }
 
+SIR_model_ab_ <- function(params) {
+}
+
 local_ep_mod <- cmpfun(SIR_model_)
+local_ep_mod_ab <- cmpfun(SIR_model_ab_)
+
 
 bounds_factory <- function() {
     register_bound <- function(list_orig, prefix, lower, upper, num = 1) {
