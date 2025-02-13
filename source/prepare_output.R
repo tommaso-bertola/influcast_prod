@@ -116,9 +116,8 @@ if (signal == "ILI" || is.null(signal)) {
     epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
 } else if (signal == "AB") {
     epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod_ab
-} else {
-    stop("Signal not recognized")
-    quit(status = 1)
+} else if (signal == "A" || signal == "B") {
+    epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
 }
 
 melted_incidence <- data.frame()
@@ -140,7 +139,7 @@ for (i in seq_len(n_iterations)) {
     } else {
         inc <- inc_tot
     }
-    if (signal == "ILI" || is.null(signal)) {
+    if (signal == "ILI" || is.null(signal) || signal == "A" || signal == "B") {
         if (any(is.na(inc))) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
             next
@@ -180,15 +179,12 @@ for (i in seq_len(n_iterations)) {
             )
         melted_incidence_a <- rbind(melted_incidence_a, r_a)
         melted_incidence_b <- rbind(melted_incidence_b, r_b)
-    } else if (signal == "A" || signal == "B") {
-        stop("Signal not recognized")
-        quit(status = 1)
     } else {
         stop("Signal not recognized")
         quit(status = 1)
     }
 }
-if (signal == "ILI") {
+if (signal == "ILI" || is.null(signal) || signal == "A" || signal == "B") {
     tmp_national <- melted_incidence %>%
         select(-patch_age) %>%
         group_by(week, realization) %>%

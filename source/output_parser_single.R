@@ -6,7 +6,7 @@ library(stringr)
 library(reshape2)
 
 
-raw_incidence_national <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
+raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", signal, ".csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
@@ -19,7 +19,9 @@ raw_incidence_regional <- files %>%
         read.csv(file) %>%
             mutate(region = basename(file)) %>%
             separate(region, into = c("region", "latest", "csv"), sep = "-") %>%
-            select(-csv, -latest, -target, -numero_casi, -numero_assistiti)
+            select(-csv, -latest, -target, -numero_casi, -numero_assistiti, -incidenza) %>%
+            left_join(raw_incidence_national, by = c("settimana", "anno")) %>%
+            filter(!is.na(incidenza))
     }) %>%
     bind_rows() %>%
     pivot_wider(names_from = region, values_from = incidenza) %>%
