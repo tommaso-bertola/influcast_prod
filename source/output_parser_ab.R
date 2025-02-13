@@ -19,6 +19,12 @@ raw_incidence_national_b <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI+_F
 
 raw_incidence_national <- bind_rows(raw_incidence_national_a, raw_incidence_national_b)
 
+joint <- raw_incidence_national %>%
+    group_by(orizzonte, anno, settimana) %>%
+    summarise(incidenza = sum(incidenza)) %>%
+    ungroup() %>%
+    mutate(target = "ILI+_FLU_AB")
+raw_incidence_national <- bind_rows(raw_incidence_national, joint)
 # Read data
 national_df <- readRDS(national_file_name)
 current_week_national <- national_df$current_week

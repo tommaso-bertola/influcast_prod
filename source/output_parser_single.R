@@ -6,7 +6,7 @@ library(stringr)
 library(reshape2)
 
 
-raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", signal, ".csv")) %>%
+raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", national_df$signal, ".csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
@@ -50,7 +50,7 @@ current_week <- strsplit(current_year_week, "_")[[1]][2]
 
 national <- national_df$quantiles %>%
     as.data.frame() %>%
-    slice_tail(n = 6) %>%
+    # slice_tail(n = 6) %>%
     pivot_longer(cols = -week, names_to = "quantiles", values_to = "incidence") %>%
     mutate(id_valore = as.numeric(stringr::str_replace_all(quantiles, "q", "")) / 100) %>%
     select(-quantiles) %>%
@@ -73,7 +73,7 @@ national <- national_df$quantiles %>%
 regional <- regional_df$quantiles %>%
     as.data.frame() %>%
     group_by(pop_index) %>%
-    slice_tail(n = 6) %>%
+    # slice_tail(n = 6) %>%
     ungroup() %>%
     left_join(regions_influcast, by = c("n_patch" = "order_census")) %>%
     select(-pop_reg, -pop_index) %>%
@@ -106,7 +106,7 @@ regional_to_save <- regional %>%
     arrange(anno, settimana, luogo, id_valore, orizzonte)
 
 
-total_table <- rbind(national, regional_to_save)
+total_table <- rbind(national) %>% filter(orizzonte >= -1)
 write.table(total_table,
     paste0("uploading_predictions/", current_year_week, "_", national_df$signal, ".csv"),
     sep = ",",
