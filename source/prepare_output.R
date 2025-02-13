@@ -12,7 +12,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-# unique_string_ <- "4bc66"
+# unique_string_ <- "06c49"
 file_name <- paste0("output/", unique_string_, "_results.json")
 
 influcast_summariser <- function(dataframe) {
@@ -102,18 +102,28 @@ converged_parameters_fn <- function(results, threshold = 1000, only_converged = 
 }
 
 pso_data <- fromJSON(file_name)
+signal <- pso_data$signal
 current_week <- pso_data$complete_list_parameters$current_week
 results <- results_fn(pso_data)
-converged_parameters <- converged_parameters_fn(results)
+converged_parameters <- converged_parameters_fn(results, threshold = 4000)
 population_reg <- pop_reg_fn(pso_data)
 pop_reg_age <- pop_reg_age_fn(pso_data)
 
 pop_national <- pso_data$complete_list_parameters$pop_tot
 params <- pso_data$complete_list_parameters
 params_transform <- transform_param_f_producer(pso_data)
-epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
+if (signal == "ILI" || is.null(signal)) {
+    epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
+} else if (signal == "AB") {
+    epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod_ab
+} else {
+    stop("Signal not recognized")
+    quit(status = 1)
+}
 
 melted_incidence <- data.frame()
+melted_incidence_a <- data.frame()
+melted_incidence_b <- data.frame()
 n_iterations <- nrow(converged_parameters)
 
 params <- prediction_extender(params)
@@ -121,65 +131,141 @@ for (i in seq_len(n_iterations)) {
     params <- params_transform(params, converged_parameters, i)
     inc_tot <- epidemic_model_incidence(params)
     if (typeof(inc_tot) == "list") {
-        inc <- inc_tot$abs_inc
+        if (signal == "AB") {
+            inc_a <- inc_tot$abs_inc_a
+            inc_b <- inc_tot$abs_inc_b
+        } else {
+            inc <- inc_tot$abs_inc
+        }
     } else {
         inc <- inc_tot
     }
-    if (any(is.na(inc))) {
-        cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
-        next
+    if (signal == "ILI" || is.null(signal)) {
+        if (any(is.na(inc))) {
+            cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
+        r <- as.data.frame(inc) %>%
+            rename_with(~ gsub("X", "", .)) %>%
+            mutate(week = seq_len(nrow(.))) %>%
+            pivot_longer(cols = -week, values_to = "values", names_to = "patch_age") %>%
+            mutate(
+                realization = i,
+                n_patch = ((as.numeric(patch_age) - 1) %% params$n_mm) + 1,
+                n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
+            )
+        melted_incidence <- rbind(melted_incidence, r)
+    } else if (signal == "AB") {
+        if (any(is.na(inc_a)) || any(is.na(inc_b))) {
+            cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
+        r_a <- as.data.frame(inc_a) %>%
+            rename_with(~ gsub("X", "", .)) %>%
+            mutate(week = seq_len(nrow(.))) %>%
+            pivot_longer(cols = -week, values_to = "values", names_to = "patch_age") %>%
+            mutate(
+                realization = i,
+                n_patch = ((as.numeric(patch_age) - 1) %% params$n_mm) + 1,
+                n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
+            )
+        r_b <- as.data.frame(inc_b) %>%
+            rename_with(~ gsub("X", "", .)) %>%
+            mutate(week = seq_len(nrow(.))) %>%
+            pivot_longer(cols = -week, values_to = "values", names_to = "patch_age") %>%
+            mutate(
+                realization = i,
+                n_patch = ((as.numeric(patch_age) - 1) %% params$n_mm) + 1,
+                n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
+            )
+        melted_incidence_a <- rbind(melted_incidence_a, r_a)
+        melted_incidence_b <- rbind(melted_incidence_b, r_b)
+    } else if (signal == "A" || signal == "B") {
+        stop("Signal not recognized")
+        quit(status = 1)
+    } else {
+        stop("Signal not recognized")
+        quit(status = 1)
     }
-    r <- as.data.frame(inc) %>%
-        rename_with(~ gsub("X", "", .)) %>%
-        mutate(week = seq_len(nrow(.))) %>%
-        pivot_longer(cols = -week, values_to = "values", names_to = "patch_age") %>%
-        mutate(
-            realization = i,
-            n_patch = ((as.numeric(patch_age) - 1) %% params$n_mm) + 1,
-            n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
-        )
-    melted_incidence <- rbind(melted_incidence, r)
 }
+if (signal == "ILI") {
+    tmp_national <- melted_incidence %>%
+        select(-patch_age) %>%
+        group_by(week, realization) %>%
+        summarize(values = sum(values), .groups = "drop") %>%
+        group_by(week)
 
-tmp_national <- melted_incidence %>%
-    select(-patch_age) %>%
-    group_by(week, realization) %>%
-    summarize(values = sum(values), .groups = "drop") %>%
-    group_by(week)
+    tmp_regions <- melted_incidence %>%
+        select(-patch_age) %>%
+        group_by(week, n_patch, realization) %>%
+        summarize(values = sum(values), .groups = "drop") %>%
+        group_by(week, n_patch)
 
-tmp_regions <- melted_incidence %>%
-    select(-patch_age) %>%
-    group_by(week, n_patch, realization) %>%
-    summarize(values = sum(values), .groups = "drop") %>%
-    group_by(week, n_patch)
+    quantiles_regions <- tmp_regions %>%
+        influcast_summariser()
+    quantiles_national <- tmp_national %>%
+        influcast_summariser()
 
-quantiles_regions <- tmp_regions %>%
-    influcast_summariser()
-quantiles_national <- tmp_national %>%
-    influcast_summariser()
+    quant_regional <- quantiles_regions %>%
+        left_join(population_reg, by = c("n_patch" = "n_patch")) %>%
+        mutate(
+            across(starts_with("q"), ~ . / pop_reg * 1000)
+        )
 
-quant_regional <- quantiles_regions %>%
-    left_join(population_reg, by = c("n_patch" = "n_patch")) %>%
-    mutate(
-        across(starts_with("q"), ~ . / pop_reg * 1000)
+    quant_national <- quantiles_national %>%
+        mutate(
+            across(starts_with("q"), ~ . / pop_national * 1000)
+        )
+
+    saveRDS(
+        list(
+            signal = signal,
+            quantiles = quant_regional,
+            current_week = current_week
+        ),
+        paste0("output/regional_quantiles_", unique_string_, ".rds")
     )
-
-quant_national <- quantiles_national %>%
-    mutate(
-        across(starts_with("q"), ~ . / pop_national * 1000)
+    saveRDS(
+        list(
+            signal = signal,
+            quantiles = quant_national,
+            current_week = current_week
+        ),
+        paste0("output/national_quantiles_", unique_string_, ".rds")
     )
+} else if (signal == "AB") {
+    tmp_national_a <- melted_incidence_a %>%
+        select(-patch_age) %>%
+        group_by(week, realization) %>%
+        summarize(values = sum(values), .groups = "drop") %>%
+        group_by(week)
+    tmp_national_b <- melted_incidence_b %>%
+        select(-patch_age) %>%
+        group_by(week, realization) %>%
+        summarize(values = sum(values), .groups = "drop") %>%
+        group_by(week)
 
-saveRDS(
-    list(
-        quantiles = quant_regional,
-        current_week = current_week
-    ),
-    paste0("output/regional_quantiles_", unique_string_, ".rds")
-)
-saveRDS(
-    list(
-        quantiles = quant_national,
-        current_week = current_week
-    ),
-    paste0("output/national_quantiles_", unique_string_, ".rds")
-)
+    quantiles_national_a <- tmp_national_a %>%
+        influcast_summariser()
+
+    quantiles_national_b <- tmp_national_b %>%
+        influcast_summariser()
+
+    quant_national_a <- quantiles_national_a %>%
+        mutate(
+            across(starts_with("q"), ~ . / pop_national * 1000)
+        )
+    quant_national_b <- quantiles_national_b %>%
+        mutate(
+            across(starts_with("q"), ~ . / pop_national * 1000)
+        )
+
+    saveRDS(
+        list(
+            signal = signal,
+            quantiles = list(A = quant_national_a, notA = quant_national_b),
+            current_week = current_week
+        ),
+        paste0("output/national_quantiles_", unique_string_, ".rds")
+    )
+}

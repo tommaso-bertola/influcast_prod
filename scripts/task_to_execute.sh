@@ -108,13 +108,14 @@ else
 fi
 
 FILE=$(cat uploading_predictions/current_week.txt)
-FILE_CSV="$FILE.csv"
+SIGNAL=$(cat uploading_predictions/current_signal.txt)
+FILE_CSV="$FILE\_$SIGNAL.csv"
 
-keybase chat upload $msg  uploading_predictions/$(echo $FILE)_regional.png
-keybase chat upload $msg  uploading_predictions/$(echo $FILE)_national.png
-keybase chat upload $msg  uploading_predictions/$FILE.csv
+keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_regional.png
+keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_national.png
+keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL.csv
 cp scripts/runner.sh uploading_predictions/runner.txt
-keybase chat upload $msg  uploading_predictions/runner.txt
+keybase chat upload $msg uploading_predictions/runner.txt
 if [ $? -ne 0 ]; then
     notify "Error in sending image on keybase. Exiting script." "error"
     exit 1
