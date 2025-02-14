@@ -74,7 +74,8 @@ ts_to_inc_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, pop_r
         group_by(week) %>%
         summarize(across(c(strain_1, strain_2), ~ sum(.) / sum(strain_1 + strain_2) * 100)) %>%
         as.data.frame() %>%
-        select(-week)
+        select(-week) %>%
+        pull(strain_1)
 
     s <- singular_ts$s
 
@@ -114,6 +115,15 @@ ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, po
 
     strain_1 <- new_inf_i + new_rec_i
     strain_2 <- new_inf_ii + new_rec_ii
+
+    percent_strains <- data.frame(strain_1 = rowSums(strain_1), strain_2 = rowSums(strain_2)) %>%
+        apply(., 2, diff) %>%
+        as.data.frame() %>%
+        mutate(week = (row(.[1]) - 1) %/% 7 + 1) %>%
+        group_by(week) %>%
+        summarize(across(c(strain_1, strain_2), ~ sum(.) / sum(strain_1 + strain_2) * 100)) %>%
+        as.data.frame() %>%
+        select(-week)
 
     # -(S(t+1) - S(t))
     abs_inc_a <- apply(as.data.frame(strain_1), 2, diff) %>%
@@ -157,7 +167,8 @@ ts_to_inc_ab_ <- function(solution_out, n_mm, n_aa, p_reported, pop_national, po
         inc_a = inc_a,
         inc_b = inc_b,
         national_inc_a = national_inc_a,
-        national_inc_b = national_inc_b
+        national_inc_b = national_inc_b,
+        percent_strains = percent_strains
     ))
 }
 

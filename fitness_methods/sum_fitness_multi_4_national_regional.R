@@ -28,12 +28,18 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
             res_reg_age <- m
         }
     }
-
-    residuals_df_vir <- abs(weekly_perc - vir_inc)
-    for (col_index in seq_len(ncol(residuals_df_vir))) {
-        col_tolerance <- ifelse(residuals_df_vir[, col_index] < 5, 5, residuals_df_vir[, col_index])
-        m <- sum(col_tolerance, na.rm = TRUE)
-        if (!is.nan(m)) {
+    if (typeof(weekly_inc) == "list") {
+        residuals_df_vir <- abs(weekly_perc - vir_inc)
+        for (col_index in seq_len(ncol(residuals_df_vir))) {
+            col_tolerance <- ifelse(residuals_df_vir[, col_index] < 5, 5, residuals_df_vir[, col_index])
+            m <- sum(col_tolerance, na.rm = TRUE)
+            if (!is.nan(m)) {
+                res_vir <- res_vir + m
+            }
+        }
+    } else if (typeof(weekly_inc) == "double") {
+        residuals_df_vir <- sum(abs(weekly_perc - vir_inc$A), na.rm = TRUE)
+        if (!is.nan(residuals_df_vir)) {
             res_vir <- res_vir + m
         }
     }
