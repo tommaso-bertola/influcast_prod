@@ -28,7 +28,7 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
             res_reg_age <- m
         }
     }
-    if (typeof(weekly_inc) == "list") {
+    if (typeof(weekly_perc) == "list") {
         residuals_df_vir <- abs(weekly_perc - vir_inc)
         for (col_index in seq_len(ncol(residuals_df_vir))) {
             col_tolerance <- ifelse(residuals_df_vir[, col_index] < 5, 5, residuals_df_vir[, col_index])
@@ -37,11 +37,14 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
                 res_vir <- res_vir + m
             }
         }
-    } else if (typeof(weekly_inc) == "double") {
+    } else if (typeof(weekly_perc) == "double") {
         residuals_df_vir <- sum(abs(weekly_perc - vir_inc$A), na.rm = TRUE)
         if (!is.nan(residuals_df_vir)) {
             res_vir <- res_vir + m
         }
+    } else {
+        stop("Error in fitness: weekly_inc is not a list or a double")
+        quit()
     }
 
     residuals_df_nat <- abs(weekly_inc_nat - data_inc_nat) / (data_inc_nat + 0.001)
