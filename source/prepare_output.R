@@ -144,6 +144,10 @@ for (i in seq_len(n_iterations)) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
             next
         }
+        if (any(inc < 0)) {
+            cat("\nNegative values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
         r <- as.data.frame(inc) %>%
             rename_with(~ gsub("X", "", .)) %>%
             mutate(week = seq_len(nrow(.))) %>%
@@ -157,6 +161,10 @@ for (i in seq_len(n_iterations)) {
     } else if (signal == "AB") {
         if (any(is.na(inc_a)) || any(is.na(inc_b))) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
+        if (any(inc_a < 0) || any(inc_b < 0)) {
+            cat("\nNegative values found in", i, "weeks", params$times, "\nSkipping\n")
             next
         }
         r_a <- as.data.frame(inc_a) %>%
