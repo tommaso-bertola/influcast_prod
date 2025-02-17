@@ -28,10 +28,11 @@ raw_incidence_national <- bind_rows(raw_incidence_national, joint)
 # Read data
 national_df <- readRDS(national_file_name)
 current_week_national <- national_df$current_week
+current_week_national <- gsub("-", "_", current_week_national)
 
 # Extract current year and week
-current_year <- strsplit(current_week_national, "-")[[1]][1]
-current_week <- strsplit(current_week_national, "-")[[1]][2]
+current_year <- strsplit(current_week_national, "_")[[1]][1]
+current_week <- strsplit(current_week_national, "_")[[1]][2]
 
 # Helper function to process data
 process_data <- function(data, target_label) {
@@ -62,7 +63,7 @@ total_table <- bind_rows(national_a, national_b) %>% filter(orizzonte >= -1)
 
 # Write data to file
 write.table(total_table,
-    paste0("uploading_predictions/", current_week_national, "_", national_df$csv, ".csv"),
+    paste0("uploading_predictions/", current_week_national, "_", national_df$signal, ".csv"),
     sep = ",",
     row.names = FALSE,
     col.names = TRUE,

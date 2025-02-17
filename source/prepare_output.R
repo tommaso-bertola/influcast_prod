@@ -133,6 +133,7 @@ for (i in seq_len(n_iterations)) {
         if (signal == "AB") {
             inc_a <- inc_tot$abs_inc_a
             inc_b <- inc_tot$abs_inc_b
+            percent <- inc_tot$percent_strains
         } else {
             inc <- inc_tot$abs_inc
         }
