@@ -136,6 +136,7 @@ parallel_PSO <- function(
                     list(
                         unique_run_string = unique_run_string,
                         description = desc,
+                        signal = signal,
                         epi_model = epidemic_model,
                         fit_method = fitness_method,
                         time_single_run = time_inner_loop[3],

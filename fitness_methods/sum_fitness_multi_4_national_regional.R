@@ -28,26 +28,35 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
             res_reg_age <- m
         }
     }
-
-    residuals_df_vir <- abs(weekly_perc - vir_inc)
-    for (col_index in seq_len(ncol(residuals_df_vir))) {
-        col_tolerance <- ifelse(residuals_df_vir[, col_index] < 5, 5, residuals_df_vir[, col_index])
-        m <- sum(col_tolerance, na.rm = TRUE)
-        if (!is.nan(m)) {
+    if (typeof(weekly_perc) == "list") {
+        residuals_df_vir <- abs(weekly_perc - vir_inc)
+        for (col_index in seq_len(ncol(residuals_df_vir))) {
+            col_tolerance <- ifelse(residuals_df_vir[, col_index] < 5, 5, residuals_df_vir[, col_index])
+            m <- sum(col_tolerance, na.rm = TRUE)
+            if (!is.nan(m)) {
+                res_vir <- res_vir + m
+            }
+        }
+    } else if (typeof(weekly_perc) == "double") {
+        residuals_df_vir <- sum(abs(weekly_perc - vir_inc$A), na.rm = TRUE)
+        if (!is.nan(residuals_df_vir)) {
             res_vir <- res_vir + m
         }
+    } else {
+        stop("Error in fitness: weekly_inc is not a list or a double")
+        quit()
     }
 
     residuals_df_nat <- abs(weekly_inc_nat - data_inc_nat) / (data_inc_nat + 0.001)
     n_weeks <- length(residuals_df_nat$inc)
-    weights <- c(1:n_weeks)
-    weights <- exp(0.05 * weights)
+    weights <- c(1:n_weeks) / n_weeks
+    weights <- exp(2 * weights)
     residuals_df_nat <- residuals_df_nat$inc * weights
     mmm <- sum(residuals_df_nat, na.rm = TRUE)
     if (!is.nan(mmm)) {
         res_nat <- mmm
     }
-    res <- 0.01 * res_reg_age + 0.5 * res_vir + 100 * res_nat
+    res <- 1 * res_reg_age + 0.5 * res_vir + 100 * res_nat
     return(res)
 }
 

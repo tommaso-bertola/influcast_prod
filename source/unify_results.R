@@ -10,7 +10,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-
+# unique_string_ <- "06c49"
 target_files <- list.files("sim_results",
     pattern = paste0("*", unique_string_, ".*.json"),
     full.names = TRUE,
@@ -26,6 +26,7 @@ for (file in target_files) {
         results <- df$results
     }
 }
+
 signal <- df$signal
 parameters <- df$parameters
 epidemic_model <- df$epidemic_model

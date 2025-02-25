@@ -12,7 +12,7 @@ if (length(args) != 0) {
     stop("Specify parameters to the script unifying results\n")
     quit(status = 1)
 }
-
+# unique_string_ <- "06c49"
 file_name <- paste0("output/", unique_string_, "_results.json")
 
 influcast_summariser <- function(dataframe) {
@@ -103,9 +103,10 @@ converged_parameters_fn <- function(results, threshold = Inf, only_converged = F
 
 pso_data <- fromJSON(file_name)
 signal <- pso_data$signal
+signal <- pso_data$signal
 current_week <- pso_data$complete_list_parameters$current_week
 results <- results_fn(pso_data)
-converged_parameters <- converged_parameters_fn(results)
+converged_parameters <- converged_parameters_fn(results, threshold = 1500)
 population_reg <- pop_reg_fn(pso_data)
 pop_reg_age <- pop_reg_age_fn(pso_data)
 
@@ -116,9 +117,8 @@ if (signal == "ILI" || is.null(signal)) {
     epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
 } else if (signal == "AB") {
     epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod_ab
-} else {
-    stop("Signal not recognized")
-    quit(status = 1)
+} else if (signal == "A" || signal == "B") {
+    epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
 }
 
 melted_incidence <- data.frame()
@@ -134,15 +134,20 @@ for (i in seq_len(n_iterations)) {
         if (signal == "AB") {
             inc_a <- inc_tot$abs_inc_a
             inc_b <- inc_tot$abs_inc_b
+            percent <- inc_tot$percent_strains
         } else {
             inc <- inc_tot$abs_inc
         }
     } else {
         inc <- inc_tot
     }
-    if (signal != "AB") {
+    if (signal == "ILI" || is.null(signal) || signal == "A" || signal == "B") {
         if (any(is.na(inc))) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
+        if (any(inc < 0)) {
+            cat("\nNegative values found in", i, "weeks", params$times, "\nSkipping\n")
             next
         }
         r <- as.data.frame(inc) %>%
@@ -155,9 +160,13 @@ for (i in seq_len(n_iterations)) {
                 n_age = ((as.numeric(patch_age) - 1) %/% params$n_mm) + 1
             )
         melted_incidence <- rbind(melted_incidence, r)
-    } else {
+    } else if (signal == "AB") {
         if (any(is.na(inc_a)) || any(is.na(inc_b))) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
+            next
+        }
+        if (any(inc_a < 0) || any(inc_b < 0)) {
+            cat("\nNegative values found in", i, "weeks", params$times, "\nSkipping\n")
             next
         }
         r_a <- as.data.frame(inc_a) %>%
@@ -180,10 +189,12 @@ for (i in seq_len(n_iterations)) {
             )
         melted_incidence_a <- rbind(melted_incidence_a, r_a)
         melted_incidence_b <- rbind(melted_incidence_b, r_b)
+    } else {
+        stop("Signal not recognized")
+        quit(status = 1)
     }
 }
-
-if (signal != "AB") {
+if (signal == "ILI" || is.null(signal) || signal == "A" || signal == "B") {
     tmp_national <- melted_incidence %>%
         select(-patch_age) %>%
         group_by(week, realization) %>%
@@ -214,6 +225,7 @@ if (signal != "AB") {
 
     saveRDS(
         list(
+            signal = signal,
             quantiles = quant_regional,
             current_week = current_week
         ),
@@ -221,6 +233,7 @@ if (signal != "AB") {
     )
     saveRDS(
         list(
+            signal = signal,
             quantiles = quant_national,
             current_week = current_week
         ),
@@ -255,7 +268,7 @@ if (signal != "AB") {
 
     saveRDS(
         list(
-            signal = "AB",
+            signal = signal,
             quantiles = list(A = quant_national_a, notA = quant_national_b),
             current_week = current_week
         ),

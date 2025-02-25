@@ -32,21 +32,21 @@ notify() {
 notify "Run started" "start"
 
 hostname=$(hostname)
-if [ "$hostname" != "influcast" ]; then
+if [ "$hostname" != "influcast-0" ]; then
     notify "Hostname is not 'influcast'. Exiting script." "error"
     exit 1
 fi
 
 LOGFILE_remote="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S')_download_remote.txt"
-LOGFILE_local="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S')_download_local.txt"
-notify "Update local Influcast repository on remote machines" "info"
-parallel --sshloginfile machines.txt --resume --onall --joblog "$LOGFILE_remote" --workdir /home/ubuntu/influcast_prod/scripts ./download_new_data.sh ::: 1
-if [ $? -ne 0 ]; then
-    notify "Error in downloading data from remote machines. Exiting script." "error"
-    exit 1
-else
-    notify "Remote data downloaded successfully" "success"
-fi
+LOGFILE_local="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S')_download_local_influcast0.txt"
+# notify "Update local Influcast repository on remote machines" "info"
+# parallel --sshloginfile machines.txt --resume --onall --joblog "$LOGFILE_remote" --workdir /home/ubuntu/influcast_prod/scripts ./download_new_data.sh ::: 1
+# if [ $? -ne 0 ]; then
+#     notify "Error in downloading data from remote machines. Exiting script." "error"
+#     exit 1
+# else
+#     notify "Remote data downloaded successfully" "success"
+# fi
 
 notify "Update local Influcast repository on local machine" "info"
 parallel --resume --jobs 1 --joblog "$LOGFILE_local" --workdir /home/ubuntu/influcast_prod/scripts ./download_new_data.sh ::: 1
@@ -58,10 +58,10 @@ else
 fi
 sleep 1
 
-notify "Starting the data processing on remote machines" "info"
+notify "Starting the data processing on local machines" "info"
 unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 notify "Unique string is $unique_string" "info"
-./scripts/runner.sh $unique_string
+./scripts/runner_local.sh $unique_string
 if [ $? -ne 0 ]; then
     notify "Error in computing the model estimates. Exiting script." "error"
     exit 1
@@ -69,15 +69,15 @@ else
     notify "Model estimates computed successfully" "success"
 fi
 
-#gather results
-notify "Gathering results and deleting from remote machines" "info"
-./scripts/copy_script.sh
-if [ $? -ne 0 ]; then
-    notify "Error in gathering results from rempote machines. Exiting script." "error"
-    exit 1
-else
-    notify "Results were gathered successfully and are now stored locally" "success"
-fi
+# #gather results
+# notify "Gathering results and deleting from remote machines" "info"
+# ./scripts/copy_script.sh
+# if [ $? -ne 0 ]; then
+#     notify "Error in gathering results from rempote machines. Exiting script." "error"
+#     exit 1
+# else
+#     notify "Results were gathered successfully and are now stored locally" "success"
+# fi
 
 notify "Unifying results" "info"
 Rscript source/unify_results.R $unique_string >/dev/null 2>&1
