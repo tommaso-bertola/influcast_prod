@@ -1,11 +1,11 @@
-times=(1 2 3 4 5 6 7 8 9 10)
+times=(1 2 3 4 5)
 week=(NA)
 # this should be 9, NA throws an error in the ode solver
 season=('2024-2025')
-maxiter=(70)
-runs=(100)
+maxiter=(50)
+runs=(500)
 swarmsize=(70)
-signal=("A") #"A" "B" "AB" "ILI"
+signal=("B") #"A" "B" "AB" "ILI"
 if [ -z "$1" ]; then
     unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 else
@@ -26,5 +26,4 @@ desc="${unique_string}_test_national_regional_fit"
 LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 
 # parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]}
-# parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}
-parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}
+parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}

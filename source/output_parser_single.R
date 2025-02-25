@@ -55,7 +55,7 @@ national <- national_df$quantiles %>%
     mutate(id_valore = as.numeric(stringr::str_replace_all(quantiles, "q", "")) / 100) %>%
     select(-quantiles) %>%
     mutate(
-        target = "ILI",
+        target = paste0("ILI+_FLU_", national_df$signal),
         anno = current_year,
         settimana = current_week,
         tipo_valore = "quantile",

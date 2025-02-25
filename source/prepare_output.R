@@ -105,7 +105,7 @@ pso_data <- fromJSON(file_name)
 signal <- pso_data$signal
 current_week <- pso_data$complete_list_parameters$current_week
 results <- results_fn(pso_data)
-converged_parameters <- converged_parameters_fn(results, threshold = 4000)
+converged_parameters <- converged_parameters_fn(results, threshold = 1500)
 population_reg <- pop_reg_fn(pso_data)
 pop_reg_age <- pop_reg_age_fn(pso_data)
 
