@@ -21,7 +21,8 @@ epi_fit_age_groups=(
  "SIR_multistrain_no_age-per_thousand_nat_reg-1"
  )
 # do not use spaces in the description
-desc="${unique_string}_test_national_regional_fit"
+# desc="${unique_string}_test_national_regional_fit"
+desc="${unique_string}_no_description_use_exp_3_no_arrange"
 
 LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 

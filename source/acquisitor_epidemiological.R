@@ -49,12 +49,12 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
     # complete national and regional incidence tables
     italy_incidence_complete <- tmp_italy %>%
         full_join(total_year_weeks) %>%
-        arrange(year_week) %>%
+        # arrange(year_week) %>%
         rename(incidence = incidenza)
 
     region_incidence_complete <- region_wider %>%
-        full_join(total_year_weeks) %>%
-        arrange(year_week)
+        full_join(total_year_weeks) # %>%
+    # arrange(year_week)
 
     # if (!is.null(max_week_filter)) {
     #     italy_incidence_complete <- italy_incidence_complete %>%
@@ -62,7 +62,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
     #     region_incidence_complete <- region_incidence_complete %>%
     #         filter(year_week <= max_week_filter)
     # }
-    current_week <- as.character(max(italy_incidence_complete$year_week))
+    current_week <- as.character(italy_incidence_complete$year_week[nrow(italy_incidence_complete)])
 
     return(list(
         italy_incidence = italy_incidence_complete,

@@ -11,6 +11,15 @@ virus_perc <- function(n_week = NULL) {
     #     return(n_week)
     # }
     # virus_percentage <- as.data.frame(virus_perc[virus_perc$week <= n_week_virological(n_week), -1])
-    virus_percentage <- data.frame(A = rep(100, n_week), notA = rep(0, n_week))
+
+    path_percentage <- "/home/ubuntu/influcast_prod/data/epidemiological/epicentro/compare_a_b_iss_influcast.csv"
+    virus_percentage <- read.csv(path_percentage)
+    virus_percentage <- virus_percentage[1:n_week, ]
+    virus_percentage <- data.frame(A = virus_percentage$A, notA = virus_percentage$Other)
+    if (nrow(virus_percentage) != n_week) {
+        stop("The number of weeks in the virus percentage file is different from the number of weeks requested")
+    }
+
+    # virus_percentage <- data.frame(A = rep(100, n_week), notA = rep(0, n_week))
     return(virus_percentage)
 }

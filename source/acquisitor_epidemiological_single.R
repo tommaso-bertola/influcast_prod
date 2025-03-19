@@ -35,7 +35,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL) {
         select(region_code) %>%
         pull()
     colnames(tmp_regions) <- c("year_week", region_code)
-    current_week <- as.character(max(tmp_italy$year_week))
+    current_week <- as.character(tmp_italy$year_week[nrow(tmp_italy)])
     region_incidence_complete <- tmp_regions
 
     return(list(
