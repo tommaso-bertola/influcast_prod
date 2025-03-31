@@ -5,7 +5,7 @@ season=('2024-2025')
 maxiter=(70)
 runs=(100)
 swarmsize=(70)
-signal=("A") #"A" "B" "AB" "ILI"
+signal=("ILI") #"A" "B" "AB" "ILI"
 if [ -z "$1" ]; then
     unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 else
