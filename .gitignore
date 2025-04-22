@@ -1,10 +1,10 @@
 .gitingore
 joblog/*
 sim_results/*
-data/census/*
-data/data_generators/check_files/*
-data/data_generators/raw_data_sources/*
-data/epidemiological/branda/*
+
+
+
+
 output/*
 
 machines.txt
@@ -16,7 +16,7 @@ machines.txt
 
 *.DS_Store
 *.old
-data/epidemiological/influcast/regions.txt
+
 
 uploading_predictions/current_week.txt
 uploading_predictions/*.png
