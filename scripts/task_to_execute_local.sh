@@ -32,7 +32,7 @@ notify() {
 notify "Run started" "start"
 
 hostname=$(hostname)
-if [ "$hostname" != "influcast-0" ]; then
+if [ "$hostname" != "influcast-small" ]; then
     notify "Hostname is not 'influcast'. Exiting script." "error"
     exit 1
 fi
