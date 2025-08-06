@@ -51,6 +51,7 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
     n_weeks <- length(residuals_df_nat$inc)
     weights <- c(1:n_weeks) / n_weeks
     weights <- exp(2 * weights)
+    weights[1:as.integer(length(weights) / 3)] <- 0
     residuals_df_nat <- residuals_df_nat$inc * weights
     mmm <- sum(residuals_df_nat, na.rm = TRUE)
     if (!is.nan(mmm)) {
