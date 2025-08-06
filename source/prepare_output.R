@@ -106,7 +106,7 @@ signal <- pso_data$signal
 signal <- pso_data$signal
 current_week <- pso_data$complete_list_parameters$current_week
 results <- results_fn(pso_data)
-converged_parameters <- converged_parameters_fn(results, threshold = 1500)
+converged_parameters <- converged_parameters_fn(results, threshold = 6000)
 population_reg <- pop_reg_fn(pso_data)
 pop_reg_age <- pop_reg_age_fn(pso_data)
 
