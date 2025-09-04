@@ -121,6 +121,7 @@ keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_national.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL.csv
 cp scripts/runner.sh uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/runner.txt
+keybase chat upload $msg fitness_methods/sum_fitness_multi_4_national_regional.R
 if [ $? -ne 0 ]; then
     notify "Error in sending image on keybase. Exiting script." "error"
     exit 1
