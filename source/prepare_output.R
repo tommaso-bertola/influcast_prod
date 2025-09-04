@@ -87,9 +87,16 @@ pop_reg_age_fn <- function(pso_data) {
     pop_reg_age
 }
 converged_parameters_fn <- function(results, threshold = Inf, only_converged = FALSE) {
-    results <- results %>%
-        as.data.frame() %>%
-        filter(exitvalue <= threshold)
+    if (threshold > 0) {
+        results <- results %>%
+            as.data.frame() %>%
+            filter(exitvalue <= threshold)
+    } else if (threshold < 0) {
+        df <- as.data.frame(results)
+        thr <- quantile(df$exitvalue, probs = -threshold, na.rm = TRUE)
+        results <- df %>%
+            filter(exitvalue <= thr)
+    }
     if (only_converged) {
         results <- results %>%
             filter(exitcode == 0) %>%
@@ -106,7 +113,7 @@ signal <- pso_data$signal
 signal <- pso_data$signal
 current_week <- pso_data$complete_list_parameters$current_week
 results <- results_fn(pso_data)
-converged_parameters <- converged_parameters_fn(results, threshold = 6000)
+converged_parameters <- converged_parameters_fn(results, threshold = -0.8)
 population_reg <- pop_reg_fn(pso_data)
 pop_reg_age <- pop_reg_age_fn(pso_data)
 
