@@ -11,9 +11,19 @@ virus_perc <- function(n_week = NULL) {
     #     return(n_week)
     # }
     # virus_percentage <- as.data.frame(virus_perc[virus_perc$week <= n_week_virological(n_week), -1])
+    incidence_df <- read.csv("/home/ubuntu/influcast_prod/data/epidemiological/epicentro/andamento-settimanale-de.csv")
 
-    path_percentage <- "/home/ubuntu/influcast_prod/data/epidemiological/epicentro/compare_a_b_iss_influcast.csv"
-    virus_percentage <- read.csv(path_percentage)
+    df <- incidence_df %>%
+        mutate(
+            A = .[, 2] + .[, 3] + .[, 4],
+            Other = .[, 5] + .[, 6] + .[, 7] + .[, 8] # + .[, 9] + .[, 10] + .[, 11] + .[, 12] + .[, 13]
+        ) %>%
+        select(Settimana, A, Other) %>%
+        mutate(A = A / (A + Other) * 100, Other = Other / (A + Other) * 100)
+
+
+    # path_percentage <- "/home/ubuntu/influcast_prod/data/epidemiological/epicentro/compare_a_b_iss_influcast.csv"
+    virus_percentage <- df # read.csv(path_percentage)
     virus_percentage <- virus_percentage[1:n_week, ]
     virus_percentage <- data.frame(A = virus_percentage$A, notA = virus_percentage$Other)
     if (nrow(virus_percentage) != n_week) {

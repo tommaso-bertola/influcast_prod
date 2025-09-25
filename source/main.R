@@ -25,6 +25,7 @@ if (length(args) != 0) {
     swarmsize_ <- as.numeric(args[8]) # change swarm size
     season_ <- args[9]
     signal_ <- args[10]
+    consolidate_ <- args[11]
 } else {
     stop("Specify parameters to the script\n")
     quit(status = 1)
@@ -83,7 +84,8 @@ parallel_PSO <- function(
     c.p = 0.4,
     c.g = 0.6,
     age_groups = age_groups_,
-    signal = signal_) {
+    signal = signal_,
+    consolidate = consolidate_) {
     # create the fitness function depending on the epidemic model
     model <- model_builder(epidemic_model, fitness_method)
     fitness_compiled <- cmpfun(model$fitness)
@@ -100,7 +102,11 @@ parallel_PSO <- function(
     }
 
     # get real data
-    real_data_and_pars <- get_real_data(season_data, n_week, mobility_type, age_groups, signal)
+    real_data_and_pars <- get_real_data(
+        season_data, n_week,
+        mobility_type, age_groups,
+        signal, consolidate
+    )
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params
     data_inc <- real_data_and_pars$tables$incidences

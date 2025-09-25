@@ -12,7 +12,14 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
     df <- data.frame()
     for (i in seq_len(nrow(region_names))) {
         path_file <- paste0(path, "/", region_names[i, ]$region, "-latest-ILI.csv")
-        tmp <- read.csv(path_file)
+        tmp <- tryCatch(read.csv(path_file),
+            error = function(e) {
+                cols <- c("anno", "settimana", "numero_casi", "numero_assistiti", "incidenza", "target")
+                df <- data.frame(matrix(ncol = length(cols), nrow = 0))
+                colnames(df) <- cols
+                return(df)
+            }
+        )
         if (nrow(tmp) == 0) {
             # Add a row with NA values
             tmp <- rbind(tmp, setNames(as.list(rep(NA, ncol(tmp))), names(tmp)))
