@@ -1,4 +1,4 @@
-.gitingore
+.gitignore
 joblog/*
 sim_results/*
 
@@ -16,7 +16,7 @@ machines.txt
 
 *.DS_Store
 *.old
-
+*.zip
 
 uploading_predictions/current_week.txt
 uploading_predictions/*.png
