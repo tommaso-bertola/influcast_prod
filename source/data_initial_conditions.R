@@ -18,7 +18,7 @@ initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "r
         virus_percentage <- virus_perc(n_week = n_week)
         current_week <- NULL
     } else if (season == "2024-2025") {
-        if (signal == "ILI" || is.null(signal)) {
+        if (signal == "ILI" || signal == "I" || is.null(signal)) {
             source("source/data_incidence_influcast.R", local = TRUE)
             source("source/data_virus_influcast.R", local = TRUE)
             incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population)
