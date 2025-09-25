@@ -7,7 +7,7 @@ library(reshape2)
 source("source/data_census.R")
 source("source/data_mobility.R")
 
-initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL) {
+initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate=FALSE) {
     census_df <- census(age_groups)
     mobility_matr <- mobility(mobility_type = mobility_type)
     c_matrix_data <- as.matrix(readRDS("data/census/grouped_contact_matrix.rds"))
@@ -19,19 +19,22 @@ initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "r
         current_week <- NULL
     } else if (season == "2024-2025") {
         if (signal == "ILI" || signal == "I" || is.null(signal)) {
+            print("Using ILI data")
             source("source/data_incidence_influcast.R", local = TRUE)
             source("source/data_virus_influcast.R", local = TRUE)
-            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population)
+            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population, consolidate)
             virus_percentage <- virus_perc(n_week = incidence_df$n_weeks)
             current_week <- incidence_df$current_week
         } else if (signal == "AB") {
+            print("Using A/B data")
             source("source/data_incidence_influcast_ab.R", local = TRUE)
-            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population)
+            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population, consolidate)
             virus_percentage <- incidence_df$percent_ab # virus_perc(n_week = incidence_df$n_weeks)
             current_week <- incidence_df$current_week
         } else if (signal == "A" || signal == "B") {
+            print(paste0("Using single strain data: ", signal))
             source("source/data_incidence_influcast_single.R", local = TRUE)
-            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population, signal)
+            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population, signal, consolidate)
             virus_percentage <- incidence_df$percent_ab # virus_perc(n_week = incidence_df$n_weeks)
             current_week <- incidence_df$current_week
         } else {

@@ -5,6 +5,13 @@ library(magrittr)
 library(stringr)
 library(reshape2)
 
+cons <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/consolidation.txt")
+if (cons == "TRUE") {
+    consolidation_path <- "consolidated/"
+} else {
+    consolidation_path <- "not_consolidated/"
+}
+
 raw_incidence_national_a <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_A.csv") %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
@@ -63,7 +70,7 @@ total_table <- bind_rows(national_a, national_b) %>% filter(orizzonte >= -1)
 
 # Write data to file
 write.table(total_table,
-    paste0("uploading_predictions/", current_week_national, "_", national_df$signal, ".csv"),
+    paste0("uploading_predictions/", consolidation_path, current_week_national, "_", national_df$signal, ".csv"),
     sep = ",",
     row.names = FALSE,
     col.names = TRUE,
@@ -104,5 +111,5 @@ plot_national <- ggplot(data = national, aes(x = orizzonte)) +
     )
 
 # Save plots
-ggsave(paste0("uploading_predictions/", current_week_national, "_", national_df$signal, "_national.png"), plot_national, width = 10, height = 6, dpi = 300)
-ggsave(paste0("uploading_predictions/", current_week_national, "_", national_df$signal, "_regional.png"), plot_national, width = 10, height = 6, dpi = 300)
+ggsave(paste0("uploading_predictions/", consolidation_path, current_week_national, "_", national_df$signal, "_national.png"), plot_national, width = 10, height = 6, dpi = 300)
+ggsave(paste0("uploading_predictions/", consolidation_path, current_week_national, "_", national_df$signal, "_regional.png"), plot_national, width = 10, height = 6, dpi = 300)

@@ -66,7 +66,8 @@ notify "Starting the data processing on local machines" "info"
 unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 notify "Unique string is $unique_string" "info"
 signal=$(cat uploading_predictions/current_signal.txt)
-./scripts/runner_local.sh $unique_string $signal
+consolidation=$(cat uploading_predictions/consolidation.txt)
+./scripts/runner_local.sh $unique_string $signal $consolidation
 if [ $? -ne 0 ]; then
     notify "Error in computing the model estimates. Exiting script." "error"
     exit 1
@@ -116,11 +117,18 @@ FILE=$(cat uploading_predictions/current_week.txt)
 SIGNAL=$(cat uploading_predictions/current_signal.txt)
 FILE_CSV="$FILE\_$SIGNAL.csv"
 
+if [ $consolidation == "TRUE" ]; then
+    FILE="consolidated/$FILE"
+else
+    FILE="not_consolidated/$FILE"
+fi
+
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_regional.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_national.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL.csv
 cp scripts/runner.sh uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/runner.txt
+keybase chat upload $msg uploading_predictions/consolidation.txt
 keybase chat upload $msg fitness_methods/sum_fitness_multi_4_national_regional.R
 if [ $? -ne 0 ]; then
     notify "Error in sending image on keybase. Exiting script." "error"

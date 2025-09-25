@@ -5,6 +5,12 @@ library(magrittr)
 library(stringr)
 library(reshape2)
 
+cons <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/consolidation.txt")
+if (cons == "TRUE") {
+    consolidation_path <- "consolidated/"
+} else {
+    consolidation_path <- "not_consolidated/"
+}
 
 raw_incidence_national <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
@@ -16,10 +22,18 @@ files <- files[!grepl("italia-latest-ILI.csv", files)]
 
 raw_incidence_regional <- files %>%
     lapply(function(file) {
-        read.csv(file) %>%
-            mutate(region = basename(file)) %>%
-            separate(region, into = c("region", "latest", "csv"), sep = "-") %>%
-            select(-csv, -latest, -target, -numero_casi, -numero_assistiti)
+        tryCatch(
+            {
+                read.csv(file) %>%
+                    mutate(region = basename(file)) %>%
+                    separate(region, into = c("region", "latest", "csv"), sep = "-") %>%
+                    select(-csv, -latest, -target, -numero_casi, -numero_assistiti)
+            },
+            error = function(e) {
+                print(paste("Problem in reading file (maybe it is empty):", file, " - ", e$message))
+                data.frame()
+            }
+        )
     }) %>%
     bind_rows() %>%
     pivot_wider(names_from = region, values_from = incidenza) %>%
@@ -106,7 +120,7 @@ regional_to_save <- regional %>%
 
 total_table <- rbind(national, regional_to_save) %>% filter(orizzonte >= -1)
 write.table(total_table,
-    paste0("uploading_predictions/", current_year_week, "_", national_df$signal, ".csv"),
+    paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, ".csv"),
     sep = ",",
     row.names = FALSE,
     col.names = TRUE,
@@ -166,5 +180,5 @@ plot_national <- national %>%
 
 
 
-ggsave(paste0("uploading_predictions/", current_year_week, "_", national_df$signal, "_national.png"), plot_national, width = 10, height = 6, dpi = 300)
-ggsave(paste0("uploading_predictions/", current_year_week, "_", national_df$signal, "_regional.png"), plot_regional, width = 10, height = 6, dpi = 300)
+ggsave(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_national.png"), plot_national, width = 10, height = 6, dpi = 300)
+ggsave(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_regional.png"), plot_regional, width = 10, height = 6, dpi = 300)

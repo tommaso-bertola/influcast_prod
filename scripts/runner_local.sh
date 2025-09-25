@@ -12,6 +12,12 @@ else
     signal=$2
 fi
 
+if [ -z "$3" ]; then
+    consolidation=("FALSE") #TRUE FALSE
+else
+    consolidation=$3
+fi
+
 if [ -z "$1" ]; then
     unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 else
@@ -28,10 +34,10 @@ epi_fit_age_groups=(
  )
 # do not use spaces in the description
 # desc="${unique_string}_test_national_regional_fit"
-desc="${unique_string}_no_description_use_exp_3_no_arrange"
+desc="${unique_string}_no_description_use_exp_3_no_arrange" 
 
 LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 
 # parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]}
 # parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}
-parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}
+parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]} ::: ${consolidation[@]}

@@ -3,7 +3,7 @@ library(tidyr)
 library(stringr)
 library(readr)
 library(reshape2)
-incidence <- function(season = "2024-2025", n_week = NULL, italian_population, reg_pop, signal) {
+incidence <- function(season = "2024-2025", n_week = NULL, italian_population, reg_pop, signal, consolidate = FALSE) {
     # source("source/season_limiter.R", local = TRUE)
     source("source/data_census.R", local = TRUE)
     # Supporting tables to get the right correspondence
@@ -19,6 +19,18 @@ incidence <- function(season = "2024-2025", n_week = NULL, italian_population, r
             colnames(.) <- seq_along(.)
             .
         }
+
+    # consolidation
+    if (consolidate) {
+        consolidation_func <- read.csv("/home/ubuntu/influcast_prod/data/epidemiological/consolidation/consolidation_italy_2324_2425.csv")
+        consolidation_func <- consolidation_func[1:13, 2]
+        consolidation_func[13] <- 1 # last week is not consolidated
+        consolidation_func <- rev(consolidation_func)[1:nrow(inc_nat)]
+        inc_nat <- inc_nat / (consolidation_func / 100)
+        inc_reg <- inc_reg / (consolidation_func / 100)
+    } else {
+        # does nothing
+    }
 
     abs_inc_nat <- inc_nat * italian_population / 1000
 

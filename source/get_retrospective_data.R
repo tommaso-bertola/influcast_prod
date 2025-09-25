@@ -25,12 +25,23 @@ if (target == "I") {
         "piemonte", "puglia",
         "sardegna", "sicilia",
         "toscana", "umbria",
-        "valle_d_aosta", "veneto",
+        "valle_d_aosta", "veneto"
     )
     for (region in regions) {
         region_path <- paste0("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/", region)
         region_url <- gsub("/italia-", paste0("/", region, "-"), first_row$url)
-        remote_df <- read.csv(region_url)
+        remote_df <- tryCatch(
+            {
+                read.csv(region_url)
+            },
+            error = function(e) {
+                if (grepl("cannot open URL", e$message)) {
+                    warning(paste0("Could not open file at URL (possibly 404):", region_url))
+                }
+                NULL # return NULL on failure
+            }
+        )
+        # remote_df <- read.csv(region_url)
         write.csv(remote_df, paste0(region_path, "-latest-ILI.csv"), row.names = FALSE, quote = FALSE)
     }
 } else {
