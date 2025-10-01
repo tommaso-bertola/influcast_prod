@@ -24,7 +24,7 @@ incidence <- function(season = "2024-2025", n_week = NULL, italian_population, r
     if (consolidate) {
         consolidation_func <- read.csv("/home/ubuntu/influcast_prod/data/epidemiological/consolidation/consolidation_italy_2324_2425.csv")
         consolidation_func <- consolidation_func[1:13, 2]
-        consolidation_func[13] <- 1 # last week is not consolidated
+        consolidation_func[13] <- 100 # last week is not consolidated
         consolidation_func <- rev(consolidation_func)[1:nrow(inc_nat)]
         inc_nat <- inc_nat / (consolidation_func / 100)
         inc_reg <- inc_reg / (consolidation_func / 100)
