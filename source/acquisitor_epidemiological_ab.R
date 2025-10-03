@@ -10,10 +10,10 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
     )
 
     tmp_italy_a <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_A.csv") %>%
-        mutate(year_week = paste0(anno, "-", settimana)) %>%
+        mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
         select(year_week, incidenza)
     tmp_italy_b <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_B.csv") %>%
-        mutate(year_week = paste0(anno, "-", settimana)) %>%
+        mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
         select(year_week, incidenza)
 
     tmp_italy <- tmp_italy_a %>%

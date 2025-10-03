@@ -10,7 +10,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL) {
     )
     if (signal == "A" || signal == "B") {
         tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", signal, ".csv")) %>%
-            mutate(year_week = paste0(anno, "-", settimana)) %>%
+            mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
             select(year_week, incidenza) %>%
             mutate(
                 perc_a = 100,
