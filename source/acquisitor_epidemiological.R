@@ -46,7 +46,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
     year_weeks <- region_wider$year_week
 
     tmp_italy <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
-        mutate(year_week = paste0(anno, "-", settimana)) %>%
+        mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
         select(year_week, incidenza)
 
     year_weeks_italy <- tmp_italy$year_week
