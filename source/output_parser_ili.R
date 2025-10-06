@@ -7,9 +7,9 @@ library(reshape2)
 
 cons <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/consolidation.txt")
 if (cons == "TRUE") {
-    consolidation_path <- "consolidated/"
+    consolidation_path <- "consolidated/last_7/"
 } else {
-    consolidation_path <- "not_consolidated/"
+    consolidation_path <- "not_consolidated/last_7/"
 }
 
 raw_incidence_national <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
