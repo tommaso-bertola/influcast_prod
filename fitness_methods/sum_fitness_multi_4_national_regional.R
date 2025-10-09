@@ -13,7 +13,7 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
     res_vir <- 0
     res_nat <- 0
 
-    weeks_back <- 7
+    # weeks_back <- 7
 
     residuals_df <- abs(weekly_inc - data_inc_reg_age)^2 / (data_inc_reg_age + 0.001)
     merit_factor <- c(rep(10, 21))
@@ -25,9 +25,9 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
 
     for (col_index in seq_len(ncol(residuals_df))) {
         col_tolerance <- ifelse(residuals_df[, col_index] < fitness_tolerance, 0, residuals_df[, col_index] * merit_factor[col_index])
-        length_col_tol <- length(col_tolerance)
-        min_index <- max(1, length_col_tol - weeks_back)
-        col_tolerance <- col_tolerance[min_index:length_col_tol]
+        # length_col_tol <- length(col_tolerance)
+        # min_index <- max(1, length_col_tol - weeks_back)
+        # col_tolerance <- col_tolerance[min_index:length_col_tol]
         m <- sum(col_tolerance, na.rm = TRUE)
         if (!is.nan(m)) {
             res_reg_age <- m
@@ -37,9 +37,9 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
         residuals_df_vir <- abs(weekly_perc - vir_inc)
         for (col_index in seq_len(ncol(residuals_df_vir))) {
             col_tolerance <- ifelse(residuals_df_vir[, col_index] < 5, 5, residuals_df_vir[, col_index])
-            length_col_tol <- length(col_tolerance)
-            min_index <- max(1, length_col_tol - weeks_back)
-            col_tolerance <- col_tolerance[min_index:length_col_tol]
+            # length_col_tol <- length(col_tolerance)
+            # min_index <- max(1, length_col_tol - weeks_back)
+            # col_tolerance <- col_tolerance[min_index:length_col_tol]
             m <- sum(col_tolerance, na.rm = TRUE)
             if (!is.nan(m)) {
                 res_vir <- res_vir + m
@@ -66,9 +66,9 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
     weights[length(weights)] <- max(weights)
     # weights[1:3] <- 0
     residuals_df_nat <- residuals_df_nat$inc * weights
-    length_residuals <- length(residuals_df_nat)
-    min_index <- max(1, length_residuals - weeks_back)
-    residuals_df_nat <- residuals_df_nat[min_index:length_residuals]
+    # length_residuals <- length(residuals_df_nat)
+    # min_index <- max(1, length_residuals - weeks_back)
+    # residuals_df_nat <- residuals_df_nat[min_index:length_residuals]
     # remove_idx <- seq(2, length(residuals_df_nat) - 1, by = 2)
     # residuals_df_nat[remove_idx] <- residuals_df_nat[remove_idx] * 2
     # residuals_df_nat<-residuals_df_nat[-c(2:8)]
