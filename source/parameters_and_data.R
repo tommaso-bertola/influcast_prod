@@ -1,7 +1,7 @@
 source("source/data_census.R")
 source("source/data_mobility.R")
 
-get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate = FALSE) {
+get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate = FALSE, current_week_from_args = NULL) {
     census_df <- census(age_groups)
     mobility_matr <- mobility(mobility_type = mobility_type)
     c_matrix_data <- as.matrix(readRDS("data/census/grouped_contact_matrix.rds"))
@@ -33,6 +33,10 @@ get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiati
             current_week <- incidence_df$current_week
         } else {
             stop("Signal not recognized")
+            quit(status = 1)
+        }
+        if (current_week_from_args != current_week) {
+            stop(paste0("Current week from args (", current_week_from_args, ") does not match current week from data (", current_week, ") parameters_and_data.R/get_real_data()"))
             quit(status = 1)
         }
     } else if (is.null(season)) {

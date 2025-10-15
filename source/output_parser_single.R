@@ -18,7 +18,7 @@ raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/I
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
 
-files <- list.files("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest", pattern = ".*\\.csv", full.names = TRUE)
+files <- list.files(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest"), pattern = ".*\\.csv", full.names = TRUE)
 files <- files[!grepl("italia-latest-ILI.csv", files)]
 
 raw_incidence_regional <- files %>%

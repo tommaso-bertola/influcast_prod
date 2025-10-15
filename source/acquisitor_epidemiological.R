@@ -33,18 +33,18 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, season = NULL) {
         select(region, code, nuts2, anno, settimana, incidenza) %>%
         arrange(nuts2) %>%
         mutate(
-            year_week = paste0(anno, "-", settimana),
+            year_week = paste0(anno, "_", sprintf("%02d", settimana)),
             region_code = paste0(region, "-", code, "-", nuts2)
         ) %>%
         select(region_code, year_week, incidenza) %>%
         pivot_wider(names_from = region_code, values_from = incidenza) %>%
         as.data.frame() %>%
-        filter(year_week != "NA-NA")
+        filter(year_week != "NA_NA")
 
     year_weeks <- region_wider$year_week
 
     tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest/italia-latest-ILI.csv")) %>%
-        mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
+        mutate(year_week = paste0(anno, "_", sprintf("%02d", settimana))) %>%
         select(year_week, incidenza)
 
     year_weeks_italy <- tmp_italy$year_week

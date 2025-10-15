@@ -36,12 +36,18 @@ echo "Number of rows: $line_count"
 # while IFS= read -r line; do
 #     echo "$line"
 # done < /home/ubuntu/influcast_prod/retrospective/missing_rounds_comunipd-mobnetSI2R_working_copy.csv
-
+current_season=$(cat /home/ubuntu/influcast_prod/uploading_predictions/current_season.txt)
 
 while [ $line_count -ne 0 ]; do
     echo "Processing line $line_count"
     notify "Get retrospective data" "info"
-    Rscript /home/ubuntu/influcast_prod/source/get_retrospective_data.R
+    Rscript /home/ubuntu/influcast_prod/source/get_retrospective_data.R "$current_season"
+    if [ $? -ne 0 ]; then
+        notify "Error in getting retrospective data. Exiting script." "error"
+        exit 1
+    else
+        notify "Retrospective data retrieved successfully" "success"
+    fi
     line_count=$(wc -l < /home/ubuntu/influcast_prod/retrospective/missing_rounds_comunipd-mobnetSI2R_working_copy.csv)
-    ./scripts/task_to_execute_retrospective.sh
+    ./scripts/task_to_execute_retrospective.sh "$current_season"
 done

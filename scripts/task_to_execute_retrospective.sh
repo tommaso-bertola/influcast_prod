@@ -67,7 +67,10 @@ unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-
 notify "Unique string is $unique_string" "info"
 signal=$(cat uploading_predictions/current_signal.txt)
 consolidation=$(cat uploading_predictions/consolidation.txt)
-./scripts/runner_local.sh $unique_string $signal $consolidation
+current_season=$(cat uploading_predictions/current_season.txt)
+current_week=$(cat uploading_predictions/current_week.txt)
+notify "Unique string: $unique_string Season: $current_season Week: $current_week Signal: $signal Consolidation: $consolidation" "info"
+./scripts/runner_local.sh $unique_string $signal $consolidation $current_season $current_week
 if [ $? -ne 0 ]; then
     notify "Error in computing the model estimates. Exiting script." "error"
     exit 1
@@ -118,7 +121,7 @@ SIGNAL=$(cat uploading_predictions/current_signal.txt)
 FILE_CSV="$FILE\_$SIGNAL.csv"
 
 if [ $consolidation == "TRUE" ]; then
-    FILE="consolidated/$FILE"
+    FILE="consolidated/squared/$FILE"
 else
     FILE="not_consolidated/$FILE"
 fi
