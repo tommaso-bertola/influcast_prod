@@ -90,7 +90,8 @@ parallel_PSO <- function(
     c.g = 0.6,
     age_groups = age_groups_,
     signal = signal_,
-    consolidate = consolidate_) {
+    consolidate = consolidate_,
+    current_week = current_week_) {
     # create the fitness function depending on the epidemic model
     model <- model_builder(epidemic_model, fitness_method)
     fitness_compiled <- cmpfun(model$fitness)
@@ -110,7 +111,7 @@ parallel_PSO <- function(
     real_data_and_pars <- get_real_data(
         season_data, n_week,
         mobility_type, age_groups,
-        signal, consolidate
+        signal, consolidate, current_week
     )
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params

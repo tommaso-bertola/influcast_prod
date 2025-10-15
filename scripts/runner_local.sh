@@ -1,10 +1,14 @@
 times=(1 2 3 4 5 6 7 8 9 10)
-week=(NA)
-# this should be 9, NA throws an error in the ode solver
-season=('2024-2025')
 maxiter=(70)
 runs=(100)
 swarmsize=(70)
+
+if [ -z "$1" ]; then
+    unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
+else
+    unique_string=$1
+fi
+# unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 
 if [ -z "$2" ]; then
     signal=("ILI") #"A" "B" "AB" "ILI"
@@ -18,12 +22,19 @@ else
     consolidation=$3
 fi
 
-if [ -z "$1" ]; then
-    unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
+# current_season=('2024-2025')
+if [ -z "$4" ]; then
+    current_season=$(cat uploading_predictions/current_season.txt)
 else
-    unique_string=$1
+    current_season=$4
 fi
-# unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
+
+week=(NA)
+if [ -z "$5" ]; then
+    current_week=$(cat uploading_predictions/current_week.txt)
+else
+    current_week=$5
+fi
 
 epi_fit_age_groups=(
 #  "SIR_multistrain_no_age-sum_multi_3-1"
@@ -40,4 +51,4 @@ LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 
 # parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]}
 # parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}
-parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]} ::: ${consolidation[@]}
+parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${current_season[@]} ::: ${signal[@]} ::: ${consolidation[@]} ::: ${current_week[@]}

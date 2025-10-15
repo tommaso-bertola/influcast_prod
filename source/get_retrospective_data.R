@@ -49,6 +49,7 @@ if (target == "I") {
     output_path <- paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", current_season, "/latest/italia-latest-ILI.csv")
 
     for (region in regions) {
+        cat(paste0("Retrieving data for region ", region, "\r"))
         region_path <- paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", current_season, "/latest/", region)
         region_url <- gsub("/italia-", paste0("/", region, "-"), first_row$url)
         remote_df <- tryCatch(
@@ -57,7 +58,7 @@ if (target == "I") {
             },
             error = function(e) {
                 if (grepl("cannot open URL", e$message)) {
-                    message(paste0("Could not open file at URL (possibly 404):", region_url))
+                    warning(paste0("Could not open file at URL (possibly 404):", region_url), immediate. = TRUE)
                 }
                 # NULL # return NULL on failure
                 data.frame(
@@ -71,6 +72,7 @@ if (target == "I") {
 } else {
     output_path <- paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", current_season, "/latest/italia-latest-ILI+_FLU_", target, ".csv")
     for (region in regions) {
+        cat(paste0("Retrieving data for region ", region, "\r"))
         write.csv(remote_data, paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", current_season, "/latest/", region, "-latest-ILI+_FLU_", target, ".csv"), row.names = FALSE, quote = FALSE)
     }
 }
@@ -84,7 +86,7 @@ writeLines(target, signal_file)
 
 # update the current week file
 current_week <- substr(first_row$output_file, 1, nchar(first_row$output_file) - 4)
-writeLines(current_week, "/home/ubuntu/influcast_prod/uploading_predictions/current_week_retrospective.txt")
+writeLines(current_week, "/home/ubuntu/influcast_prod/uploading_predictions/current_week.txt")
 
 # remove the first row from the missing rounds file
 colnames(missing_rounds) <- NULL

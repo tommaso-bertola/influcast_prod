@@ -32,7 +32,7 @@ notify() {
 notify "Run started" "start"
 
 hostname=$(hostname)
-if [ "$hostname" != "influcast-small" ]; then
+if [ "$hostname" != "network-vm-bluesky" ]; then
     notify "Hostname is not 'influcast'. Exiting script." "error"
     exit 1
 fi
@@ -61,7 +61,12 @@ sleep 1
 notify "Starting the data processing on local machines" "info"
 unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 notify "Unique string is $unique_string" "info"
-./scripts/runner_local.sh $unique_string
+signal=$(cat uploading_predictions/current_signal.txt)
+consolidation=$(cat uploading_predictions/consolidation.txt)
+current_season=$(cat uploading_predictions/current_season.txt)
+current_week=$(cat uploading_predictions/current_week.txt)
+notify "Unique string: $unique_string Season: $current_season Week: $current_week Signal: $signal Consolidation: $consolidation" "info"
+./scripts/runner_local.sh $unique_string $signal $consolidation $current_season $current_week
 if [ $? -ne 0 ]; then
     notify "Error in computing the model estimates. Exiting script." "error"
     exit 1
@@ -111,11 +116,21 @@ FILE=$(cat uploading_predictions/current_week.txt)
 SIGNAL=$(cat uploading_predictions/current_signal.txt)
 FILE_CSV="$FILE\_$SIGNAL.csv"
 
+if [ $consolidation == "TRUE" ]; then
+    FILE="consolidated/$FILE"
+else
+    FILE="not_consolidated/$FILE"
+fi
+
+notify "Uploading $FILE" "success"
+
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_regional.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_national.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL.csv
 cp scripts/runner.sh uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/runner.txt
+keybase chat upload $msg uploading_predictions/consolidation.txt
+keybase chat upload $msg fitness_methods/sum_fitness_multi_4_national_regional.R
 if [ $? -ne 0 ]; then
     notify "Error in sending image on keybase. Exiting script." "error"
     exit 1
