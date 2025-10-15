@@ -3,21 +3,18 @@ library(tidyr)
 library(magrittr)
 
 # read the data
-influcast_data_acquisitor <- function(max_week_filter = NULL) {
+influcast_data_acquisitor <- function(max_week_filter = NULL, season = NULL) {
     region_names <- read.csv("data/epidemiological/influcast/regions.txt",
         colClasses = c("character", "character", "character"),
         header = TRUE
     )
-    path <- "/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest"
+    path <- paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest")
     df <- data.frame()
     for (i in seq_len(nrow(region_names))) {
         path_file <- paste0(path, "/", region_names[i, ]$region, "-latest-ILI.csv")
         tmp <- tryCatch(read.csv(path_file),
             error = function(e) {
-                cols <- c("anno", "settimana", "numero_casi", "numero_assistiti", "incidenza", "target")
-                df <- data.frame(matrix(ncol = length(cols), nrow = 0))
-                colnames(df) <- cols
-                return(df)
+                data.frame(anno = numeric(0), settimana = numeric(0), numero_casi = numeric(0), numero_assistiti = numeric(0), incidenza = numeric(0), target = numeric(0))
             }
         )
         if (nrow(tmp) == 0) {
@@ -27,6 +24,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
         tmp$region <- region_names[i, ]$region
         tmp$code <- region_names[i, ]$code
         tmp$nuts2 <- region_names[i, ]$nuts2
+        tmp$incidenza[tmp$incidenza == 0] <- NA
         df <- rbind(df, tmp)
     }
 
@@ -45,7 +43,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL) {
 
     year_weeks <- region_wider$year_week
 
-    tmp_italy <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
+    tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest/italia-latest-ILI.csv")) %>%
         mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
         select(year_week, incidenza)
 

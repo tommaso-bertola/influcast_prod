@@ -3,13 +3,13 @@ library(tidyr)
 library(stringr)
 library(readr)
 library(reshape2)
-incidence <- function(season = "2024-2025", n_week = NULL, italian_population, reg_pop, signal, consolidate = FALSE) {
+incidence <- function(season = NULL, n_week = NULL, italian_population, reg_pop, consolidate = FALSE) {
     # Supporting tables to get the right correspondence
     # region_names_correspondence <- data.frame(incidence_db = c("Piedmont", "Aosta Valley", "Lombardy", "AP Bolzano", "AP Trento", "Veneto", "Friuli-Venezia Giulia", "Liguria", "Emilia-Romagna", "Tuscany", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Apulia", "Basilicata", "Calabria", "Sicily", "Sardinia"), census_db = c("Piemonte", "Valle d'Aosta / Vallée d'Aoste", "Lombardia", "Provincia Autonoma Bolzano / Bozen", "Provincia Autonoma Trento", "Veneto", "Friuli-Venezia Giulia", "Liguria", "Emilia-Romagna", "Toscana", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Puglia", "Basilicata", "Calabria", "Sicilia", "Sardegna"))
     # nuts_custom <- data.frame(region_eng = c("Piemonte", "Valle d'Aosta", "Liguria", "Lombardia", "Trentino-Alto Adige", "Trentino-Alto Adige", "Veneto", "Friuli-Venezia Giulia", "Emilia-Romagna", "Toscana", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Apulia", "Basilicata", "Calabria", "Sicily", "Sardegna"), region_3 = c("Piedmont", "Aosta Valley", "Liguria", "Lombardy", "AP Bolzano", "AP Trento", "Veneto", "Friuli-Venezia Giulia", "Emilia-Romagna", "Tuscany", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Apulia", "Basilicata", "Calabria", "Sicily", "Sardinia"), region = c("Piemonte", "Valle d'Aosta/Vallée d'Aoste", "Liguria", "Lombardia", "PA Bolzano", "PA Trento", "Veneto", "Friuli-Venezia Giulia", "Emilia-Romagna", "Toscana", "Umbria", "Marche", "Lazio", "Abruzzo", "Molise", "Campania", "Puglia", "Basilicata", "Calabria", "Sicilia", "Sardegna"), nuts2 = c("ITC1", "ITC2", "ITC3", "ITC4", "ITD1", "ITD2", "ITD3", "ITD4", "ITD5", "ITE1", "ITE2", "ITE3", "ITE4", "ITF1", "ITF2", "ITF3", "ITF4", "ITF5", "ITF6", "ITG1", "ITG2"))
 
     source("source/acquisitor_epidemiological_single.R", local = TRUE)
-    df <- influcast_data_acquisitor(n_week, signal)
+    df <- influcast_data_acquisitor(n_week, signal, season)
     inc_nat <- data.frame(inc = df$italy_incidence$incidence)
     inc_reg <- inc_reg_age <- df$region_incidence %>%
         select(-year_week) %>%
