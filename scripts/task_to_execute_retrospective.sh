@@ -123,6 +123,8 @@ else
     FILE="not_consolidated/$FILE"
 fi
 
+notify "Uploading $FILE" "success"
+
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_regional.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_national.png
 keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL.csv
