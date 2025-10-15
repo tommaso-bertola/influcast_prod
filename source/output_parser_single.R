@@ -11,13 +11,14 @@ if (cons == "TRUE") {
 } else {
     consolidation_path <- "not_consolidated/squared/"
 }
+season <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/current_season.txt")
 
-raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", national_df$signal, ".csv")) %>%
+raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", season, "/latest/italia-latest-ILI+_FLU_", national_df$signal, ".csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
 
-files <- list.files("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest", pattern = ".*\\.csv", full.names = TRUE)
+files <- list.files("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest", pattern = ".*\\.csv", full.names = TRUE)
 files <- files[!grepl("italia-latest-ILI.csv", files)]
 
 raw_incidence_regional <- files %>%
@@ -126,7 +127,6 @@ write.table(total_table,
     col.names = TRUE,
     quote = FALSE
 )
-cat(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, ".csv\n"))
 
 writeLines(current_year_week, "uploading_predictions/current_week.txt")
 writeLines(national_df$signal, "uploading_predictions/current_signal.txt")
@@ -180,6 +180,5 @@ plot_national <- national %>%
     labs(title = paste("prediction for Italy at", current_year_week, "(dashed line)", national_df$signal), x = "Weeks ahead", y = "ILI incidence")
 
 
-cat(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_national.png\n"))
 ggsave(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_national.png"), plot_national, width = 10, height = 6, dpi = 300)
 ggsave(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_regional.png"), plot_regional, width = 10, height = 6, dpi = 300)

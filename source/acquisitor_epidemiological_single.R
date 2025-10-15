@@ -3,13 +3,13 @@ library(tidyr)
 library(magrittr)
 
 # read the data
-influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL) {
+influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL, season=NULL) {
     region_names <- read.csv("data/epidemiological/influcast/regions.txt",
         colClasses = c("character", "character", "character"),
         header = TRUE
     )
     if (signal == "A" || signal == "B") {
-        tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", signal, ".csv")) %>%
+        tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", season, "/latest/italia-latest-ILI+_FLU_", signal, ".csv")) %>%
             mutate(year_week = paste0(anno, "-", sprintf("%02d", settimana))) %>%
             select(year_week, incidenza) %>%
             mutate(

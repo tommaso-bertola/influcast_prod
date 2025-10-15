@@ -7,7 +7,7 @@ library(reshape2)
 source("source/data_census.R")
 source("source/data_mobility.R")
 
-initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate=FALSE) {
+initial_data <- function(season = NULL, n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate = FALSE) {
     census_df <- census(age_groups)
     mobility_matr <- mobility(mobility_type = mobility_type)
     c_matrix_data <- as.matrix(readRDS("data/census/grouped_contact_matrix.rds"))
@@ -41,6 +41,8 @@ initial_data <- function(season = "2024-2025", n_week = NULL, mobility_type = "r
             stop("Signal not recognized")
             quit(status = 1)
         }
+    } else if (is.null(season)) {
+        stop("Season must be specified: season null in data_initial_conditions.R/initial_data()")
     }
     return(list(
         n_weeks = incidence_df$n_weeks,

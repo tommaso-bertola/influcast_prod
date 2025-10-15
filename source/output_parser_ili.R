@@ -11,13 +11,14 @@ if (cons == "TRUE") {
 } else {
     consolidation_path <- "not_consolidated/squared/"
 }
+season <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/current_season.txt")
 
-raw_incidence_national <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest/italia-latest-ILI.csv") %>%
+raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest/italia-latest-ILI.csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
 
-files <- list.files("/home/ubuntu/Influcast/sorveglianza/ILI/2024-2025/latest", pattern = ".*\\.csv", full.names = TRUE)
+files <- list.files(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest"), pattern = ".*\\.csv", full.names = TRUE)
 files <- files[!grepl("italia-latest-ILI.csv", files)]
 
 raw_incidence_regional <- files %>%

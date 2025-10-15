@@ -11,14 +11,15 @@ if (cons == "TRUE") {
 } else {
     consolidation_path <- "not_consolidated/squared/"
 }
+season <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/current_season.txt")
 
-raw_incidence_national_a <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_A.csv") %>%
+raw_incidence_national_a <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", season, "/latest/italia-latest-ILI+_FLU_A.csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza) %>%
     mutate(target = "ILI+_FLU_A")
 
-raw_incidence_national_b <- read.csv("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_B.csv") %>%
+raw_incidence_national_b <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", season, "/latest/italia-latest-ILI+_FLU_B.csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza) %>%

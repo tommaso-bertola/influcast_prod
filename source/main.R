@@ -26,6 +26,11 @@ if (length(args) != 0) {
     season_ <- args[9]
     signal_ <- args[10]
     consolidate_ <- args[11]
+    if (is.null(args[12])) {
+        message("No week specified in main.R")
+    } else {
+        current_week_ <- args[12]
+    }
 } else {
     stop("Specify parameters to the script\n")
     quit(status = 1)
