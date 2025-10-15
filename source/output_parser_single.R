@@ -7,9 +7,9 @@ library(reshape2)
 
 cons <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/consolidation.txt")
 if (cons == "TRUE") {
-    consolidation_path <- "consolidated/"
+    consolidation_path <- "consolidated/squared/"
 } else {
-    consolidation_path <- "not_consolidated/"
+    consolidation_path <- "not_consolidated/squared/"
 }
 
 raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/2024-2025/latest/italia-latest-ILI+_FLU_", national_df$signal, ".csv")) %>%
@@ -126,6 +126,7 @@ write.table(total_table,
     col.names = TRUE,
     quote = FALSE
 )
+cat(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, ".csv\n"))
 
 writeLines(current_year_week, "uploading_predictions/current_week.txt")
 writeLines(national_df$signal, "uploading_predictions/current_signal.txt")
@@ -179,6 +180,6 @@ plot_national <- national %>%
     labs(title = paste("prediction for Italy at", current_year_week, "(dashed line)", national_df$signal), x = "Weeks ahead", y = "ILI incidence")
 
 
-
+cat(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_national.png\n"))
 ggsave(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_national.png"), plot_national, width = 10, height = 6, dpi = 300)
 ggsave(paste0("uploading_predictions/", consolidation_path, current_year_week, "_", national_df$signal, "_regional.png"), plot_regional, width = 10, height = 6, dpi = 300)
