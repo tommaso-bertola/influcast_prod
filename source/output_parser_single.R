@@ -7,9 +7,9 @@ library(reshape2)
 
 cons <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/consolidation.txt")
 if (cons == "TRUE") {
-    consolidation_path <- "consolidated/squared/"
+    consolidation_path <- "consolidated/weight/"
 } else {
-    consolidation_path <- "not_consolidated/squared/"
+    consolidation_path <- "not_consolidated/weight/"
 }
 season <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/current_season.txt")
 
