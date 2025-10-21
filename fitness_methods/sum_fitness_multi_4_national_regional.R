@@ -57,8 +57,8 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
 
     residuals_df_nat <- abs(weekly_inc_nat - data_inc_nat) / (data_inc_nat + 0.001)
     n_weeks <- length(residuals_df_nat$inc)
-    # weights <- c(1:n_weeks) / n_weeks
-    # weights <- exp(2 * weights)
+    weights <- c(1:n_weeks) / n_weeks
+    weights <- exp(2 * weights)
     ranged_data <- (data_inc_nat - min(data_inc_nat)) / (max(data_inc_nat) - min(data_inc_nat))
     ranged_data <- (ranged_data + 1) * 3
     weights <- rep(10, n_weeks)
