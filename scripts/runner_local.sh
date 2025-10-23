@@ -1,5 +1,5 @@
-times=(1 2 3 4 5 6 7 8 9 10)
-maxiter=(70)
+times=(1 2 3 4 5)
+maxiter=(60)
 runs=(100)
 swarmsize=(70)
 
