@@ -121,9 +121,9 @@ SIGNAL=$(cat uploading_predictions/current_signal.txt)
 FILE_CSV="$FILE\_$SIGNAL.csv"
 
 if [ $consolidation == "TRUE" ]; then
-    FILE="consolidated/squared/$FILE"
+    FILE="consolidated/squared_weight/$FILE"
 else
-    FILE="not_consolidated/$FILE"
+    FILE="not_consolidated/squared_weight/$FILE"
 fi
 
 notify "Uploading $FILE" "success"

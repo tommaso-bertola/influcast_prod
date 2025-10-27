@@ -24,7 +24,7 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
     }
 
     for (col_index in seq_len(ncol(residuals_df))) {
-        col_tolerance <- ifelse(residuals_df[, col_index] < fitness_tolerance, 0, residuals_df[, col_index] * merit_factor[col_index])
+        col_tolerance <- ifelse(residuals_df[, col_index] < fitness_tolerance, 0, residuals_df[, col_index] * merit_factor[col_index])^2
         # length_col_tol <- length(col_tolerance)
         # min_index <- max(1, length_col_tol - weeks_back)
         # col_tolerance <- col_tolerance[min_index:length_col_tol]
@@ -55,7 +55,7 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
         quit()
     }
 
-    residuals_df_nat <- abs(weekly_inc_nat - data_inc_nat) / (data_inc_nat + 0.001)
+    residuals_df_nat <- abs(weekly_inc_nat - data_inc_nat)^2 / (data_inc_nat + 0.001)
     n_weeks <- length(residuals_df_nat$inc)
     weights <- c(1:n_weeks) / n_weeks
     weights <- exp(2 * weights)
