@@ -3,15 +3,18 @@ library(tidyr)
 library(magrittr)
 
 # read the data
-influcast_data_acquisitor <- function(max_week_filter = NULL, season = NULL) {
+influcast_data_acquisitor <- function(max_week_filter = NULL, season = NULL, signal_type=NULL) {
+    if (is.null(signal_type)) {
+        stop("Signal type must be specified in acquisitor_epidemiological.R/influcast_data_acquisitor() either ILI or ARI")
+    }
     region_names <- read.csv("data/epidemiological/influcast/regions.txt",
         colClasses = c("character", "character", "character"),
         header = TRUE
     )
-    path <- paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest")
+    path <- paste0("/home/ubuntu/Influcast/sorveglianza/", signal_type, "/", season, "/latest")
     df <- data.frame()
     for (i in seq_len(nrow(region_names))) {
-        path_file <- paste0(path, "/", region_names[i, ]$region, "-latest-ILI.csv")
+        path_file <- paste0(path, "/", region_names[i, ]$region, "-latest-", signal_type, ".csv")
         tmp <- tryCatch(read.csv(path_file),
             error = function(e) {
                 data.frame(anno = numeric(0), settimana = numeric(0), numero_casi = numeric(0), numero_assistiti = numeric(0), incidenza = numeric(0), target = numeric(0))
@@ -43,7 +46,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, season = NULL) {
 
     year_weeks <- region_wider$year_week
 
-    tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest/italia-latest-ILI.csv")) %>%
+    tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/", signal_type, "/", season, "/latest/italia-latest-", signal_type, ".csv")) %>%
         mutate(year_week = paste0(anno, "_", sprintf("%02d", settimana))) %>%
         select(year_week, incidenza)
 
@@ -54,12 +57,12 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, season = NULL) {
     # complete national and regional incidence tables
     italy_incidence_complete <- tmp_italy %>%
         full_join(total_year_weeks) %>%
-        # arrange(year_week) %>%
+        arrange(year_week) %>%
         rename(incidence = incidenza)
 
     region_incidence_complete <- region_wider %>%
-        full_join(total_year_weeks) # %>%
-    # arrange(year_week)
+        full_join(total_year_weeks)  %>%
+    arrange(year_week)
 
     # if (!is.null(max_week_filter)) {
     #     italy_incidence_complete <- italy_incidence_complete %>%

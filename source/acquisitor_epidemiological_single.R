@@ -3,13 +3,16 @@ library(tidyr)
 library(magrittr)
 
 # read the data
-influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL, season=NULL) {
+influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL, season = NULL, signal_type = NULL) {
+    if (is.null(signal_type)) {
+        stop("Signal type must be specified in acquisitor_epidemiological.R/influcast_data_acquisitor() either ILI or ARI")
+    }
     region_names <- read.csv("data/epidemiological/influcast/regions.txt",
         colClasses = c("character", "character", "character"),
         header = TRUE
     )
     if (signal == "A" || signal == "B") {
-        tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI+_FLU/", season, "/latest/italia-latest-ILI+_FLU_", signal, ".csv")) %>%
+        tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/",signal_type,"+_FLU/", season, "/latest/italia-latest-", signal_type, "+_FLU_", signal, ".csv")) %>%
             mutate(year_week = paste0(anno, "_", sprintf("%02d", settimana))) %>%
             select(year_week, incidenza) %>%
             mutate(
