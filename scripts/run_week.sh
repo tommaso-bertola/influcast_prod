@@ -1,4 +1,4 @@
-
+cd ~/influcast_prod
 signal=("A" "B" "ARI")
 signal_type=("ARI")
 consolidation="FALSE"

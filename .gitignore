@@ -18,5 +18,8 @@ machines.txt
 *.old
 *.zip
 
-uploading_predictions/current_week.txt
+
+
 uploading_predictions/*.png
+.vscode/*
+uploading_predictions/**/*.png
