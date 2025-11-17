@@ -11,7 +11,7 @@ fi
 # unique_string=$(date +"%Y%m%d%H%M%S%N" | sha256sum | awk '{print $1}' | cut -c1-5)
 
 if [ -z "$2" ]; then
-    signal=("ILI") #"A" "B" "AB" "ILI"
+    signal=("ILI") #"A" "B" "AB" "ILI" "ARI"
 else
     signal=$2
 fi
@@ -29,11 +29,17 @@ else
     current_season=$4
 fi
 
-week=(NA)
 if [ -z "$5" ]; then
+    signal_type=("ARI") #"ILI" "ARI"
+else
+    signal_type=$5
+fi
+
+week=(NA)
+if [ -z "$6" ]; then
     current_week=$(cat uploading_predictions/current_week.txt)
 else
-    current_week=$5
+    current_week=$6
 fi
 
 epi_fit_age_groups=(
@@ -51,4 +57,4 @@ LOGFILE="joblog/job_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 
 # parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]}
 # parallel --sshloginfile machines.txt --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${season[@]} ::: ${signal[@]}
-parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${current_season[@]} ::: ${signal[@]} ::: ${consolidation[@]} ::: ${current_week[@]}
+parallel --resume --jobs 1 --bar --joblog "$LOGFILE" --workdir /home/ubuntu/influcast_prod Rscript source/main.R ::: "$unique_string" ::: "$desc" ::: ${epi_fit_age_groups[@]} ::: ${times[@]} ::: ${week[@]} ::: ${maxiter[@]} ::: ${runs[@]} ::: ${swarmsize[@]} ::: ${current_season[@]} ::: ${signal[@]} ::: ${consolidation[@]} ::: ${signal_type[@]} #::: ${current_week[@]}

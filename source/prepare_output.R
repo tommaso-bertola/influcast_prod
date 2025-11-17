@@ -120,7 +120,7 @@ pop_reg_age <- pop_reg_age_fn(pso_data)
 pop_national <- pso_data$complete_list_parameters$pop_tot
 params <- pso_data$complete_list_parameters
 params_transform <- transform_param_f_producer(pso_data)
-if (signal == "ILI" || is.null(signal)) {
+if (signal == "ILI" || is.null(signal) || signal == "ARI") {
     epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod
 } else if (signal == "AB") {
     epidemic_model_incidence <- model_chooser(pso_data$epidemic_model)$ep_mod_ab
@@ -148,7 +148,7 @@ for (i in seq_len(n_iterations)) {
     } else {
         inc <- inc_tot
     }
-    if (signal == "ILI" || is.null(signal) || signal == "A" || signal == "B") {
+    if (signal == "ILI" || is.null(signal) || signal == "ARI" || signal == "A" || signal == "B") {
         if (any(is.na(inc))) {
             cat("\nNA values found in", i, "weeks", params$times, "\nSkipping\n")
             next
@@ -201,7 +201,7 @@ for (i in seq_len(n_iterations)) {
         quit(status = 1)
     }
 }
-if (signal == "ILI" || is.null(signal) || signal == "A" || signal == "B") {
+if (signal == "ILI" || signal == "ARI" || is.null(signal) || signal == "A" || signal == "B") {
     tmp_national <- melted_incidence %>%
         select(-patch_age) %>%
         group_by(week, realization) %>%

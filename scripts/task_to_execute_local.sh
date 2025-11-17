@@ -64,9 +64,10 @@ notify "Unique string is $unique_string" "info"
 signal=$(cat uploading_predictions/current_signal.txt)
 consolidation=$(cat uploading_predictions/consolidation.txt)
 current_season=$(cat uploading_predictions/current_season.txt)
+signal_type=$(cat uploading_predictions/current_signal_type.txt)
 current_week=$(cat uploading_predictions/current_week.txt)
-notify "Unique string: $unique_string Season: $current_season Week: $current_week Signal: $signal Consolidation: $consolidation" "info"
-./scripts/runner_local.sh $unique_string $signal $consolidation $current_season $current_week
+notify "Unique string: $unique_string Season: $current_season Week: $current_week Signal: $signal Signal type: $signal_type Consolidation: $consolidation" "info"
+./scripts/runner_local.sh $unique_string $signal $consolidation $current_season $signal_type $current_week
 if [ $? -ne 0 ]; then
     notify "Error in computing the model estimates. Exiting script." "error"
     exit 1
@@ -104,7 +105,7 @@ fi
 
 notify "Preparing output csv file" "info"
 # echo "Rscript source/prepare_output.R"
-Rscript source/output_parser.R $unique_string >/dev/null 2>&1
+Rscript source/output_parser.R $unique_string $signal_type >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     notify "Error in preparing output csv estimates. Exiting script." "error"
     exit 1
@@ -116,17 +117,20 @@ FILE=$(cat uploading_predictions/current_week.txt)
 SIGNAL=$(cat uploading_predictions/current_signal.txt)
 FILE_CSV="$FILE\_$SIGNAL.csv"
 
-if [ $consolidation == "TRUE" ]; then
-    FILE="consolidated/$FILE"
+if [ -z "$1" ]; then
+    notify "No path_file provided, using default ari/not_consolidated/squared_weight" "info"
+    path_file="ari/not_consolidated/squared_weight"
 else
-    FILE="not_consolidated/$FILE"
+    notify "Using provided path_file: $1" "info"
+    path_file=$1
 fi
+
 
 notify "Uploading $FILE" "success"
 
-keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_regional.png
-keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL\_national.png
-keybase chat upload $msg uploading_predictions/$FILE\_$SIGNAL.csv
+keybase chat upload $msg uploading_predictions/$path_file/$FILE\_$SIGNAL\_regional.png
+keybase chat upload $msg uploading_predictions/$path_file/$FILE\_$SIGNAL\_national.png
+keybase chat upload $msg uploading_predictions/$path_file/$FILE\_$SIGNAL.csv
 cp scripts/runner.sh uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/consolidation.txt

@@ -7,19 +7,19 @@ library(reshape2)
 
 cons <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/consolidation.txt")
 if (cons == "TRUE") {
-    consolidation_path <- "consolidated/squared_weight/"
+    consolidation_path <- "ari/consolidated/squared_weight/"
 } else {
-    consolidation_path <- "not_consolidated/squared_weight/"
+    consolidation_path <- "ari/not_consolidated/squared_weight/"
 }
 season <- readLines("/home/ubuntu/influcast_prod/uploading_predictions/current_season.txt")
 
-raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest/italia-latest-ILI.csv")) %>%
+raw_incidence_national <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/", signal_type_, "/", season, "/latest/italia-latest-", signal_type_, ".csv")) %>%
     mutate(ori = ifelse(settimana < 40, settimana + 52, settimana), orizzonte = ori - max(ori)) %>%
     select(-ori) %>%
     select(orizzonte, anno, settimana, incidenza)
 
-files <- list.files(paste0("/home/ubuntu/Influcast/sorveglianza/ILI/", season, "/latest"), pattern = ".*\\.csv", full.names = TRUE)
-files <- files[!grepl("italia-latest-ILI.csv", files)]
+files <- list.files(paste0("/home/ubuntu/Influcast/sorveglianza/", signal_type_, "/", season, "/latest"), pattern = ".*\\.csv", full.names = TRUE)
+files <- files[!grepl(paste0("italia-latest-", signal_type_, ".csv"), files)]
 
 raw_incidence_regional <- files %>%
     lapply(function(file) {
@@ -68,7 +68,7 @@ national <- national_df$quantiles %>%
     mutate(id_valore = as.numeric(stringr::str_replace_all(quantiles, "q", "")) / 100) %>%
     select(-quantiles) %>%
     mutate(
-        target = "ILI",
+        target = signal_type_,
         anno = current_year,
         settimana = current_week,
         tipo_valore = "quantile",
@@ -104,7 +104,7 @@ regional_to_save <- regional %>%
     mutate(id_valore = as.numeric(stringr::str_replace_all(quantiles, "q", "")) / 100) %>%
     select(-quantiles) %>%
     mutate(
-        target = "ILI",
+        target = signal_type_,
         anno = current_year,
         settimana = current_week,
         tipo_valore = "quantile",
@@ -177,7 +177,7 @@ plot_national <- national %>%
     geom_vline(xintercept = 0, linetype = "dashed") +
     geom_point(data = raw_incidence_national, aes(x = orizzonte, y = incidenza), color = "black") +
     geom_line(data = raw_incidence_national, aes(x = orizzonte, y = incidenza), color = "black") +
-    labs(title = paste("prediction for Italy at", current_year_week, "(dashed line)", national_df$signal), x = "Weeks ahead", y = "ILI incidence")
+    labs(title = paste("prediction for Italy at", current_year_week, "(dashed line)", national_df$signal), x = "Weeks ahead", y = paste0(signal_type_, " incidence"))
 
 
 

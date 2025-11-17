@@ -12,7 +12,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL, sea
         header = TRUE
     )
     if (signal == "A" || signal == "B") {
-        tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/",signal_type,"+_FLU/", season, "/latest/italia-latest-", signal_type, "+_FLU_", signal, ".csv")) %>%
+        tmp_italy <- read.csv(paste0("/home/ubuntu/Influcast/sorveglianza/", signal_type, "+_FLU/", season, "/latest/italia-latest-", signal_type, "+_FLU_", signal, ".csv")) %>%
             mutate(year_week = paste0(anno, "_", sprintf("%02d", settimana))) %>%
             select(year_week, incidenza) %>%
             mutate(
@@ -30,7 +30,7 @@ influcast_data_acquisitor <- function(max_week_filter = NULL, signal = NULL, sea
         rename(incidence = incidenza)
 
     # Create a dataframe with identical columns
-    tmp_regions <- as.data.frame(replicate(nrow(region_names), tmp_italy$incidenza))
+    tmp_regions <- as.data.frame(replicate(nrow(region_names), rep(NA, length(tmp_italy$incidenza))))
     tmp_regions <- cbind(tmp_italy$year_week, tmp_regions)
 
     region_code <- region_names %>%

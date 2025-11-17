@@ -1,7 +1,7 @@
 source("source/data_census.R")
 source("source/data_mobility.R")
 
-get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate = FALSE, current_week_from_args = NULL) {
+get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiation", age_groups = NULL, signal = NULL, consolidate = FALSE, signal_type = NULL, current_week_from_args = NULL) {
     census_df <- census(age_groups)
     mobility_matr <- mobility(mobility_type = mobility_type)
     c_matrix_data <- as.matrix(readRDS("data/census/grouped_contact_matrix.rds"))
@@ -12,11 +12,11 @@ get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiati
         virus_percentage <- virus_perc(n_week = n_week)
         current_week <- NULL
     } else if (season == "2024-2025" || season == "2025-2026") {
-        if (signal == "ILI" || signal == "I" || is.null(signal)) {
+        if (signal == "ILI" || signal == "I" || is.null(signal) || signal == "ARI") {
             print("Using ILI data")
             source("source/data_incidence_influcast.R", local = TRUE)
             source("source/data_virus_influcast.R", local = TRUE)
-            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population, consolidate)
+            incidence_df <- incidence(season, n_week, census_df$italian_population, census_df$region_name_population, consolidate, signal_type)
             virus_percentage <- virus_perc(n_week = incidence_df$n_weeks)
             current_week <- incidence_df$current_week
         } else if (signal == "AB") {
@@ -35,9 +35,11 @@ get_real_data <- function(season = NULL, n_week = NULL, mobility_type = "radiati
             stop("Signal not recognized")
             quit(status = 1)
         }
-        if (current_week_from_args != current_week) {
-            stop(paste0("Current week from args (", current_week_from_args, ") does not match current week from data (", current_week, ") parameters_and_data.R/get_real_data()"))
-            quit(status = 1)
+        if (!is.null(current_week_from_args)) {
+            if (current_week_from_args != current_week) {
+                stop(paste0("Current week from args (", current_week_from_args, ") does not match current week from data (", current_week, ") parameters_and_data.R/get_real_data()"))
+                quit(status = 1)
+            }
         }
     } else if (is.null(season)) {
         stop("Season must be specified: season null in parameters_and_data.R/get_real_data()")

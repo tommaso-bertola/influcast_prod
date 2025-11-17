@@ -20,6 +20,7 @@ if (length(args) == 0) {
     quit(status = 1)
 }
 unique_string_ <- args[1]
+signal_type_ <- args[2]
 # unique_string_ <- "1b908"
 
 # Read national data
@@ -30,7 +31,7 @@ national_df <- readRDS(national_file_name)
 
 # Main processing logic
 # Process data based on signal type
-if (national_df$signal == "ILI" || national_df$signal == "I") {
+if (national_df$signal == "ILI" || national_df$signal == "I" || national_df$signal == "ARI") {
     source("source/output_parser_ili.R")
 } else if (national_df$signal == "AB") {
     source("source/output_parser_ab.R")

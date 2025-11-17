@@ -26,10 +26,12 @@ if (length(args) != 0) {
     season_ <- args[9]
     signal_ <- args[10]
     consolidate_ <- args[11]
-    if (is.null(args[12])) {
-        message("No week specified in main.R")
+    signal_type_ <- args[12]
+    if (is.null(args[13]) || is.na(args[13]) || args[13] == "latest") {
+        message("No week specified in main.R, assuming NULL so the latest week is used")
+        current_week_ <- NULL
     } else {
-        current_week_ <- args[12]
+        current_week_ <- args[13]
     }
 } else {
     stop("Specify parameters to the script\n")
@@ -91,6 +93,7 @@ parallel_PSO <- function(
     age_groups = age_groups_,
     signal = signal_,
     consolidate = consolidate_,
+    signal_type = signal_type_,
     current_week = current_week_) {
     # create the fitness function depending on the epidemic model
     model <- model_builder(epidemic_model, fitness_method)
@@ -111,7 +114,7 @@ parallel_PSO <- function(
     real_data_and_pars <- get_real_data(
         season_data, n_week,
         mobility_type, age_groups,
-        signal, consolidate, current_week
+        signal, consolidate, signal_type, current_week
     )
     real_data <- real_data_and_pars$tables
     params <- real_data_and_pars$params
