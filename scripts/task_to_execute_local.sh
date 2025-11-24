@@ -67,7 +67,7 @@ current_season=$(cat uploading_predictions/current_season.txt)
 signal_type=$(cat uploading_predictions/current_signal_type.txt)
 current_week=$(cat uploading_predictions/current_week.txt)
 notify "Unique string: $unique_string Season: $current_season Last available week: $current_week Signal: $signal Signal type: $signal_type Consolidation: $consolidation" "info"
-keybase chat send $msg "$(tail Influcast/sorveglianza/ARI/2025-2026/latest/italia-latest-ARI.csv -n 1)"
+keybase chat send $msg "$(tail /home/ubuntu/Influcast/sorveglianza/ARI/2025-2026/latest/italia-latest-ARI.csv -n 1)"
 ./scripts/runner_local.sh $unique_string $signal $consolidation $current_season $signal_type $current_week
 if [ $? -ne 0 ]; then
     notify "Error in computing the model estimates. Exiting script." "error"
@@ -132,7 +132,7 @@ notify "Uploading $FILE" "success"
 keybase chat upload $msg uploading_predictions/$path_file/$FILE\_$SIGNAL\_regional.png
 keybase chat upload $msg uploading_predictions/$path_file/$FILE\_$SIGNAL\_national.png
 keybase chat upload $msg uploading_predictions/$path_file/$FILE\_$SIGNAL.csv
-cp scripts/runner.sh uploading_predictions/runner.txt
+cp scripts/runner_local.sh uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/runner.txt
 keybase chat upload $msg uploading_predictions/consolidation.txt
 keybase chat upload $msg fitness_methods/sum_fitness_multi_4_national_regional.R

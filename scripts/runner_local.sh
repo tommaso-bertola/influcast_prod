@@ -42,13 +42,19 @@ else
     current_week=$6
 fi
 
-epi_fit_age_groups=(
-#  "SIR_multistrain_no_age-sum_multi_3-1"
-#  "SIR_multistrain_5-sum_multi_2-4"
-#  "SIR_multistrain_4-sum_multi_2-4"
-#  "SIR_multistrain_3-sum_multi_2-4"
- "SIR_multistrain_no_age-per_thousand_nat_reg-1"
- )
+if [ "$signal" == "B" ]; then
+    epi_fit_age_groups=("SIR_multistrain_no_age_b_specific-per_thousand_nat_reg-1")
+else
+    epi_fit_age_groups=("SIR_multistrain_no_age-per_thousand_nat_reg-1")
+fi
+
+# epi_fit_age_groups=(
+# #  "SIR_multistrain_no_age-sum_multi_3-1"
+# #  "SIR_multistrain_5-sum_multi_2-4"
+# #  "SIR_multistrain_4-sum_multi_2-4"
+# #  "SIR_multistrain_3-sum_multi_2-4"
+#  "SIR_multistrain_no_age-per_thousand_nat_reg-1"
+#  )
 # do not use spaces in the description
 # desc="${unique_string}_test_national_regional_fit"
 desc="${unique_string}_no_description_use_exp_3_no_arrange" 
