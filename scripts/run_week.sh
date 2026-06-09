@@ -1,5 +1,5 @@
 cd ~/influcast_prod
-signal=("A" "B" "ARI")
+signal=("ARI" "A" "B")
 signal_type=("ARI")
 consolidation="FALSE"
 path_file="ari/not_consolidated/squared_weight"

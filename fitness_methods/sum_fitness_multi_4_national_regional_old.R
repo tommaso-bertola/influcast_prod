@@ -61,17 +61,14 @@ fitness_ <- function(weekly_inc_vir, data_inc, fitness_tolerance, params) {
     weights <- exp(2 * weights)
     ranged_data <- (data_inc_nat - min(data_inc_nat)) / (max(data_inc_nat) - min(data_inc_nat))
     ranged_data <- (ranged_data + 1) * 3
-    ranged_ <- as.numeric(ranged_data$inc)
-    # weights <- rep(10, n_weeks)
-    weights <- weights * ranged_
-    mm <- max(weights)
-    weights[length(weights)] <- mm * 5
-
+    weights <- rep(10, n_weeks)
+    weights <- weights * ranged_data
+    mm<- max(weights)
+    weights[length(weights)] <- mm * 50
     if (length(weights) >= 2) {
-        # weights[length(weights) - 1] <- mm * 5
-        # weights[length(weights) - 2] <- mm * 5
-        # weights[c(1, 2)] <- NA
+        weights[length(weights) - 1] <- mm * 50
     }
+    # weights[length(weights)-1] <- max(weights)*10
     # weights[1:3] <- 0
     residuals_df_nat <- residuals_df_nat$inc * weights
     # length_residuals <- length(residuals_df_nat)
